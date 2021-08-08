@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kuberam</string>
+    <string name="com_auth0_domain">rohitjakhar.us.auth0.com</string>
 </resources>
