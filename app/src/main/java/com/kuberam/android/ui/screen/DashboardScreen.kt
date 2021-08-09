@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kuberam.android.navigation.Screen
 import com.kuberam.android.utils.PieSampleData
 import com.kuberam.android.utils.buildValuePercentString
 import hu.ma.charts.legend.data.LegendEntry
@@ -88,10 +89,10 @@ fun DashboardScreen(navController: NavController) {
                 Spacer(Modifier.weight(1f, true))
                 IconButton(
                     onClick = {
-                        scope.launch { scaffoldState.drawerState.open() }
+                        navController.navigate(Screen.Login.route)
                     }
                 ) {
-                    Icon(Icons.Filled.Person, contentDescription = "face")
+                    Icon(Icons.Filled.Person, contentDescription = "profile")
                 }
             }
         },
@@ -157,27 +158,6 @@ fun SinglePieChart() {
         )
     }
 }
-
-/*@Composable
-fun MyBottomAppBar() {
-    BottomAppBar(
-        cutoutShape = CircleShape
-    ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-            IconButton(
-                onClick = {
-                    scope.launch { scaffoldState.drawerState.open() }
-                }
-            ) {
-                Icon(Icons.Filled.Menu, contentDescription = "menu")
-            }
-        }
-        Spacer(Modifier.weight(1f, true))
-        IconButton(onClick = {}) {
-            Icon(Icons.Filled.Face, contentDescription = "face")
-        }
-    }
-}*/
 
 @Composable
 fun ChartContainer(
