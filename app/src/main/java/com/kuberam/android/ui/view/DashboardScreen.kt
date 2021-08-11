@@ -1,4 +1,4 @@
-package com.kuberam.android.ui.screen
+package com.kuberam.android.ui.view
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -17,9 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomDrawer
 import androidx.compose.material.BottomDrawerValue
-import androidx.compose.material.Button
+import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
+import androidx.compose.material.DrawerDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
@@ -75,12 +76,12 @@ fun DashboardScreen(navController: NavController) {
         drawerShape = RectangleShape,
         bottomBar = {
             BottomAppBar(
-                cutoutShape = CircleShape
+                cutoutShape = CircleShape,
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
                     IconButton(
                         onClick = {
-                            scope.launch { if (drawerState.isOpen) drawerState.close() else drawerState.open() }
+                            scope.launch { if (drawerState.isOpen) drawerState.close() else drawerState.expand() }
                         }
                     ) {
                         Icon(Icons.Filled.Menu, contentDescription = "menu")
@@ -89,7 +90,7 @@ fun DashboardScreen(navController: NavController) {
                 Spacer(Modifier.weight(1f, true))
                 IconButton(
                     onClick = {
-                        navController.navigate(Screen.Login.route)
+                        navController.navigate(Screen.Profile.route)
                     }
                 ) {
                     Icon(Icons.Filled.Person, contentDescription = "profile")
@@ -99,6 +100,7 @@ fun DashboardScreen(navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    navController.navigate(Screen.AddTransaction.route)
                 },
                 shape = CircleShape
             ) {
@@ -107,26 +109,17 @@ fun DashboardScreen(navController: NavController) {
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center,
-        content = {
-
+        content = { innerPadding ->
             BottomDrawer(
                 gesturesEnabled = gesturesEnabled,
                 drawerElevation = 20.dp,
                 drawerState = drawerState,
+                drawerShape = MaterialTheme.shapes.small,
                 drawerContent = {
-                    Button(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        onClick = { scope.launch { drawerState.close() } },
-                        content = { Text("Close Drawer") }
-                    )
-                    Text("Test Rohit")
-                    Text("Test Rohit")
-                    Text("Test Rohit")
-                    Text("Test Rohit")
-                    Text("Test Rohit")
-                }
+                    Text("Test bottom sheet")
+                },
+                scrimColor = DrawerDefaults.scrimColor,
+                modifier = Modifier.padding(innerPadding)
             ) {
                 SinglePieChart()
             }

@@ -5,28 +5,37 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kuberam.android.ui.screen.AuthScreen
-import com.kuberam.android.ui.screen.DashboardScreen
+import com.kuberam.android.ui.view.AddTransaction
+import com.kuberam.android.ui.view.AuthScreen
+import com.kuberam.android.ui.view.DashboardScreen
+import com.kuberam.android.ui.view.ProfileScreen
+import com.kuberam.android.ui.view.TransactionDetails
+import com.kuberam.android.ui.viewmodel.MainViewModel
 
 @ExperimentalMaterialApi
 @Composable
-fun KuberamNavigation(isLogin: Boolean) {
+fun KuberamNavigation(isLogin: Boolean, viewModel: MainViewModel) {
     val navController = rememberNavController()
     NavHost(
         navController,
-        startDestination = if (isLogin) Screen.DashboardScreen.route else Screen.Login.route,
+        startDestination = Screen.Login.route,
         route = "home"
     ) {
         // TODO: Define all possible routes here
-        composable("nav_add") {
+        composable(Screen.Login.route) {
+            AuthScreen(navController, viewModel)
         }
-        composable("nav_login") {
-            AuthScreen(navController)
+        composable(Screen.Profile.route) {
+            ProfileScreen()
         }
-        composable("nav_profile") {
-        }
-        composable("nav_dashboard") {
+        composable(Screen.DashboardScreen.route) {
             DashboardScreen(navController)
+        }
+        composable(Screen.AddTransaction.route) {
+            AddTransaction()
+        }
+        composable(Screen.TransactionDetails.route) {
+            TransactionDetails()
         }
     }
 }
