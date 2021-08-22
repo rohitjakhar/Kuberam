@@ -1,6 +1,5 @@
 package com.kuberam.android.ui.view
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +24,7 @@ import com.google.firebase.ktx.Firebase
 import com.kuberam.android.data.model.ProfileModel
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.Constant.USER_COLLECTION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -51,7 +51,6 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                             context,
                             object : Callback<Credentials, AuthenticationException> {
                                 override fun onFailure(error: AuthenticationException) {
-                                    Log.d("test45", "error: ${error.localizedMessage}")
                                 }
 
                                 override fun onSuccess(result: Credentials) {
@@ -64,7 +63,6 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                                         .start(object :
                                                 Callback<UserProfile, AuthenticationException> {
                                                 override fun onFailure(error: AuthenticationException) {
-                                                    Log.d("test45", "error: ${error.localizedMessage}")
                                                 }
 
                                                 override fun onSuccess(result: UserProfile) {
@@ -80,7 +78,9 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                                                     )
                                                     result.getId()?.let {
                                                         scrop.launch(Dispatchers.IO) {
-                                                            Firebase.firestore.collection("Kuberam")
+                                                            Firebase.firestore.collection(
+                                                                USER_COLLECTION
+                                                            )
                                                                 .document(it)
                                                                 .set(userProfile)
                                                                 .addOnSuccessListener {
@@ -89,10 +89,6 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                                                                     navController.navigate(Screen.DashboardScreen.route)
                                                                 }
                                                                 .addOnFailureListener {
-                                                                    Log.d(
-                                                                        "test76",
-                                                                        "Failed adding data error: ${it.localizedMessage}"
-                                                                    )
                                                                 }
                                                         }
                                                     }

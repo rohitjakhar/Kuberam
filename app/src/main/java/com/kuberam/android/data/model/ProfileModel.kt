@@ -5,4 +5,7 @@ data class ProfileModel(
     val email: String,
     val profileUrl: String,
     val userId: String,
+    val totalIncome: Long = 0L,
+    val totalExpense: Long = 0L,
+    val monthlyBudget: Long = 0L
 )

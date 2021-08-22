@@ -1,19 +1,23 @@
 package com.kuberam.android.ui.view
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -26,52 +30,133 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kuberam.android.data.model.TransactionDetailsModel
+import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.Constant.EXPENSE_DATA
+import com.kuberam.android.utils.Constant.INCOME_DATA
+import java.util.Calendar
 
+@SuppressLint("UnrememberedMutableState")
 @ExperimentalMaterialApi
-@Preview(showBackground = true)
 @Composable
-fun AddTransaction() {
+fun AddTransaction(viewModel: MainViewModel) {
     var amout by rememberSaveable { mutableStateOf("") }
-    var radiostate by remember { mutableStateOf(true) }
-    val radioOption = listOf("Income", "Expense")
-    val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioOption[0]) }
+    var note by rememberSaveable { mutableStateOf("") }
+    val incomeCategoryList by viewModel.incomeData
+    val expenseCategoryList by viewModel.expenseData
+    val radioTransactionTypeOption = listOf(INCOME_DATA, EXPENSE_DATA)
+    val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioTransactionTypeOption[0]) }
+    val (selectionIncomeCategoryOption, onOptionIncomeCategorySelected) = remember {
+        mutableStateOf(
+            incomeCategoryList.firstOrNull()
+        )
+    }
 
-    Scaffold { innerPadding ->
-        Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
-            OutlinedTextField(
-                value = amout,
-                onValueChange = { amout = it },
-                label = { Text(" Amount") },
-                placeholder = { Text("Enter Amount") },
-                leadingIcon = { Icon(Icons.Default.AccountBox, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            Spacer(Modifier.padding(top = 16.dp))
-            Row(modifier = Modifier.selectableGroup().fillMaxWidth().weight(2F)) {
-                radioOption.forEach { text ->
+    Column(modifier = Modifier.padding(8.dp).fillMaxWidth().wrapContentHeight()) {
+        OutlinedTextField(
+            value = amout,
+            onValueChange = { amout = it },
+            label = { Text(" Amount") },
+            placeholder = { Text("Enter Amount") },
+            leadingIcon = { Icon(Icons.Default.AccountBox, contentDescription = null) },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        Spacer(Modifier.padding(top = 16.dp))
+        OutlinedTextField(
+            value = note,
+            onValueChange = { note = it },
+            label = { Text(" Amount") },
+            placeholder = { Text("Enter Amount") },
+            leadingIcon = { Icon(Icons.Default.AccountBox, contentDescription = null) },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
+        Spacer(Modifier.padding(top = 16.dp))
+        Row(modifier = Modifier.selectableGroup().fillMaxWidth()) {
+            radioTransactionTypeOption.forEach { text ->
+                Row(
+                    Modifier
+                        .selectable(
+                            selected = (text == selectionOption),
+                            onClick = { onOptionSelected(text) },
+                            role = Role.RadioButton
+                        )
+                ) {
+                    RadioButton(
+                        selected = (text == selectionOption),
+                        onClick = null // null recommended for accessibility with screenreaders
+                    )
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.body1.merge(),
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.padding(top = 16.dp))
+        Row(modifier = Modifier.selectableGroup().fillMaxWidth()) {
+            if (selectionOption == INCOME_DATA) {
+                incomeCategoryList.forEach { text ->
                     Row(
-                        Modifier.weight(1F)
+                        Modifier
                             .selectable(
-                                selected = (text == selectionOption),
-                                onClick = { onOptionSelected(text) },
+                                selected = (text == selectionIncomeCategoryOption),
+                                onClick = { onOptionIncomeCategorySelected(text) },
                                 role = Role.RadioButton
                             )
                     ) {
                         RadioButton(
-                            selected = (text == selectionOption),
+                            selected = (text == selectionIncomeCategoryOption),
                             onClick = null // null recommended for accessibility with screenreaders
                         )
                         Text(
-                            text = text,
+                            text = text.categoryName,
+                            style = MaterialTheme.typography.body1.merge(),
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            } else {
+                expenseCategoryList.forEach { text ->
+                    Row(
+                        Modifier
+                            .selectable(
+                                selected = (text == selectionIncomeCategoryOption),
+                                onClick = { onOptionIncomeCategorySelected(text) },
+                                role = Role.RadioButton
+                            )
+                    ) {
+                        RadioButton(
+                            selected = (text == selectionIncomeCategoryOption),
+                            onClick = null // null recommended for accessibility with screenreaders
+                        )
+                        Text(
+                            text = text.categoryName,
                             style = MaterialTheme.typography.body1.merge(),
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     }
                 }
             }
+        }
+        Spacer(Modifier.padding(top = 16.dp))
+        Button(
+            onClick = {
+                val transactionDetailsModel = TransactionDetailsModel(
+                    transactionType = selectionOption,
+                    transactionAmount = amout,
+                    transactionCategory = selectionIncomeCategoryOption?.categoryName ?: "",
+                    transactionTitle = note,
+                    transactionDate = Calendar.getInstance().time
+                )
+                viewModel.addTransaction(transactionDetailsModel)
+            },
+            modifier = Modifier.fillMaxWidth().height(48.dp)
+        ) {
+            Text("Add")
         }
     }
 }

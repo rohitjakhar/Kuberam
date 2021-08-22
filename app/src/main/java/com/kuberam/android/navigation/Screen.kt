@@ -6,4 +6,5 @@ sealed class Screen(val route: String, val resourceId: String) {
     object Profile : Screen("nav_profile", "Profile")
     object AddTransaction : Screen("nav_add_transaction", "Add Transaction")
     object TransactionDetails : Screen("nav_transaction_details", "Deatils")
+    object SplashScreen : Screen("nav_splash_screen", "Splash Screen")
 }
