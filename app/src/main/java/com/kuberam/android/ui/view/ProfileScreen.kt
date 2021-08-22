@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -40,6 +41,7 @@ import com.kuberam.android.utils.NetworkResponse
 fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
 
     viewModel.getUserDetails()
+    val context = LocalContext.current
     Scaffold {
         val profileModel by viewModel.userProfile
         Column {
@@ -109,7 +111,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
             TextBox(Color.DarkGray, text = "Setting")
             OutlinedButton(
                 onClick = {
-                    /* Called Logout from viewmodel and goto login screen */
+                    viewModel.logoutUser(context)
                 },
                 modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
             ) {

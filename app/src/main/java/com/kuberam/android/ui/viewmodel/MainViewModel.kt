@@ -1,5 +1,6 @@
 package com.kuberam.android.ui.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,10 +13,11 @@ import com.kuberam.android.data.remote.RemoteDataSource
 import com.kuberam.android.utils.Constant.INCOME_DATA
 import com.kuberam.android.utils.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,9 +36,6 @@ class MainViewModel @Inject constructor(
         mutableStateOf(NetworkResponse.Loading())
 
     init {
-        viewModelScope.launch(IO) {
-            isLogin.value = dataStorePreferenceStorage.isLogin.first()
-        }
         getUserDetails()
         getAllTransaction()
         getIncomeData()
@@ -45,7 +44,13 @@ class MainViewModel @Inject constructor(
 
     fun checkLogin() {
         viewModelScope.launch(IO) {
-            isLogin.value = dataStorePreferenceStorage.isLogin.first()
+            try {
+                isLogin.value = dataStorePreferenceStorage.isLogin.first()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    isLogin.value = dataStorePreferenceStorage.isLogin.first()
+                }
+            }
         }
     }
 
@@ -187,6 +192,18 @@ class MainViewModel @Inject constructor(
                 successListener = {},
                 failureListener = {},
                 expenseAmount = expenseAmout
+            )
+        }
+    }
+
+    fun logoutUser(context: Context) {
+        viewModelScope.launch(IO) {
+            remoteDataSource.logoutUser(
+                context = context,
+                successListener = {
+                },
+                failureListener = {
+                }
             )
         }
     }

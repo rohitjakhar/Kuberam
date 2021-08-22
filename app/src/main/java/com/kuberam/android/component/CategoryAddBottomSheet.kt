@@ -1,6 +1,7 @@
 package com.kuberam.android.component
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,6 @@ fun CategoryAddBottomSheet(
     viewModel: MainViewModel
 ) {
     var categoryName by rememberSaveable { mutableStateOf("") }
-
     val radioOption = listOf("Income", "Expense")
     val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioOption[0]) }
 
@@ -56,6 +56,7 @@ fun CategoryAddBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
+            Spacer(Modifier.padding(top = 16.dp))
             Row(modifier = Modifier.selectableGroup().fillMaxWidth()) {
                 radioOption.forEach { text ->
                     Row(
@@ -78,6 +79,7 @@ fun CategoryAddBottomSheet(
                     }
                 }
             }
+            Spacer(Modifier.padding(top = 16.dp))
             Button(
                 onClick = {
                     val categoryDataModel = CategoryDataModel(

@@ -1,6 +1,11 @@
 package com.kuberam.android.data.remote
 
+import android.content.Context
 import android.util.Log
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.callback.Callback
+import com.auth0.android.provider.WebAuthProvider
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
@@ -194,6 +199,50 @@ class RemoteDataSource @Inject constructor(
             collectionReference.document(userid).collection(categoryDataModel.transactionType)
                 .document(categoryDataModel.categoryName).set(categoryDataModel).await()
             successListener.invoke("Created")
+        } catch (e: Exception) {
+            failureListener.invoke(e)
+        }
+    }
+
+    suspend fun logoutUser(
+        context: Context,
+        successListener: (String) -> Unit,
+        failureListener: (Exception) -> Unit
+    ) {
+        val auth = Auth0(
+            "n1t1L4rqRSFnrnoYrnAEQhHg9svWCcqu",
+            "rohitjakhar.us.auth0.com"
+        )
+        clearData(
+            successListener = {
+                WebAuthProvider.logout(auth)
+                    .withScheme("demo")
+                    .start(
+                        context,
+                        object : Callback<Void?, AuthenticationException> {
+                            override fun onSuccess(result: Void?) {
+                                successListener.invoke("Logout")
+                            }
+
+                            override fun onFailure(error: AuthenticationException) {
+                                failureListener.invoke(error)
+                            }
+                        }
+                    )
+            },
+            failureListener = {
+                failureListener.invoke(it)
+            }
+        )
+    }
+
+    private suspend fun clearData(
+        successListener: (String) -> Unit,
+        failureListener: (Exception) -> Unit
+    ) {
+        try {
+            dataStorePreferenceStorage.clearData()
+            successListener.invoke("Cleared")
         } catch (e: Exception) {
             failureListener.invoke(e)
         }

@@ -24,12 +24,12 @@ fun SplashScreen(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    viewModel.checkLogin()
     val islogin by viewModel.isLogin
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
     LaunchedEffect(key1 = true) {
+        viewModel.checkLogin()
         scale.animateTo(
             targetValue = 0.3f,
             animationSpec = tween(
@@ -39,11 +39,20 @@ fun SplashScreen(
                 }
             )
         )
-        delay(3000L)
+        delay(2000L)
+        navController.popBackStack()
         if (islogin) {
-            navController.navigate(Screen.DashboardScreen.route)
+            navController.navigate(Screen.DashboardScreen.route) {
+                popUpTo(Screen.DashboardScreen.route){
+                    inclusive = true
+                }
+            }
         } else {
-            navController.navigate(Screen.Login.route)
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Login.route){
+                    inclusive = true
+                }
+            }
         }
     }
     Box(
