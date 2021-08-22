@@ -32,7 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
+import com.kuberam.android.component.LoadingComponent
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.NetworkResponse
 
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
@@ -59,35 +61,46 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
-                    Column {
-                        Box(contentAlignment = Alignment.Center) {
-                            Image(
-                                painter = rememberImagePainter(
-                                    data =
-                                    profileModel.profileUrl,
-                                    builder = {
-                                        transformations(CircleCropTransformation())
-                                    },
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier.size(128.dp),
-                                alignment = Alignment.Center,
+                    when (profileModel) {
+                        is NetworkResponse.Success -> {
+                            Column {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Image(
+                                        painter = rememberImagePainter(
+                                            data =
+                                            profileModel.data?.profileUrl,
+                                            builder = {
+                                                transformations(CircleCropTransformation())
+                                            },
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(128.dp),
+                                        alignment = Alignment.Center,
 
-                            )
+                                    )
+                                }
+                                Box(contentAlignment = Alignment.Center) {
+                                    profileModel.let { it1 ->
+                                        it1.data?.name?.let { it2 ->
+                                            Text(
+                                                it2
+                                            )
+                                        }
+                                    } ?: Text("Name is null")
+                                }
+                                Box(contentAlignment = Alignment.Center) {
+                                    profileModel.let { it1 ->
+                                        it1.data?.email?.let { it2 ->
+                                            Text(
+                                                it2
+                                            )
+                                        }
+                                    } ?: Text("Email is null")
+                                }
+                            }
                         }
-                        Box(contentAlignment = Alignment.Center) {
-                            profileModel.let { it1 ->
-                                Text(
-                                    it1.name
-                                )
-                            } ?: Text("Name is null")
-                        }
-                        Box(contentAlignment = Alignment.Center) {
-                            profileModel.let { it1 ->
-                                Text(
-                                    it1.email
-                                )
-                            } ?: Text("Email is null")
+                        is NetworkResponse.Loading -> {
+                            LoadingComponent()
                         }
                     }
                 }

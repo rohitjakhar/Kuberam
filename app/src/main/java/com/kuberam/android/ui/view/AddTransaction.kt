@@ -35,6 +35,7 @@ import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.Constant.EXPENSE_DATA
 import com.kuberam.android.utils.Constant.INCOME_DATA
+import com.kuberam.android.utils.NetworkResponse
 import java.util.Calendar
 
 @SuppressLint("UnrememberedMutableState")
@@ -49,7 +50,7 @@ fun AddTransaction(viewModel: MainViewModel) {
     val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioTransactionTypeOption[0]) }
     val (selectionIncomeCategoryOption, onOptionIncomeCategorySelected) = remember {
         mutableStateOf(
-            incomeCategoryList.firstOrNull()
+            incomeCategoryList.data?.get(0)?.categoryName
         )
     }
 
@@ -99,60 +100,77 @@ fun AddTransaction(viewModel: MainViewModel) {
         Spacer(Modifier.padding(top = 16.dp))
         Row(modifier = Modifier.selectableGroup().fillMaxWidth()) {
             if (selectionOption == INCOME_DATA) {
-                incomeCategoryList.forEach { text ->
-                    Row(
-                        Modifier
-                            .selectable(
-                                selected = (text == selectionIncomeCategoryOption),
-                                onClick = { onOptionIncomeCategorySelected(text) },
-                                role = Role.RadioButton
-                            )
-                    ) {
-                        RadioButton(
-                            selected = (text == selectionIncomeCategoryOption),
-                            onClick = null // null recommended for accessibility with screenreaders
-                        )
-                        Text(
-                            text = text.categoryName,
-                            style = MaterialTheme.typography.body1.merge(),
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                when (incomeCategoryList) {
+                    is NetworkResponse.Success -> {
+                        incomeCategoryList.data?.forEach { text ->
+                            Row(
+                                Modifier
+                                    .selectable(
+                                        selected = (text.categoryName == selectionIncomeCategoryOption),
+                                        onClick = { onOptionIncomeCategorySelected(text.categoryName) },
+                                        role = Role.RadioButton
+                                    )
+                            ) {
+                                RadioButton(
+                                    selected = (text.categoryName == selectionIncomeCategoryOption),
+                                    onClick = null // null recommended for accessibility with screenreaders
+                                )
+                                Text(
+                                    text = text.categoryName,
+                                    style = MaterialTheme.typography.body1.merge(),
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                            }
+                        }
+                    }
+                    is NetworkResponse.Loading -> {
+                        // TODO: 8/22/21 Loding State 
+                    }
+                    is NetworkResponse.Failure -> {
+                        // TODO: 8/22/21 show error message
                     }
                 }
             } else {
-                expenseCategoryList.forEach { text ->
-                    Row(
-                        Modifier
-                            .selectable(
-                                selected = (text == selectionIncomeCategoryOption),
-                                onClick = { onOptionIncomeCategorySelected(text) },
-                                role = Role.RadioButton
-                            )
-                    ) {
-                        RadioButton(
-                            selected = (text == selectionIncomeCategoryOption),
-                            onClick = null // null recommended for accessibility with screenreaders
-                        )
-                        Text(
-                            text = text.categoryName,
-                            style = MaterialTheme.typography.body1.merge(),
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                when (expenseCategoryList){
+                    is NetworkResponse.Success -> {
+                        expenseCategoryList.data?.forEach { text ->
+                            Row(
+                                Modifier
+                                    .selectable(
+                                        selected = (text.categoryName == selectionIncomeCategoryOption),
+                                        onClick = { onOptionIncomeCategorySelected(text.categoryName) },
+                                        role = Role.RadioButton
+                                    )
+                            ) {
+                                RadioButton(
+                                    selected = (text.categoryName == selectionIncomeCategoryOption),
+                                    onClick = null // null recommended for accessibility with screenreaders
+                                )
+                                Text(
+                                    text = text.categoryName,
+                                    style = MaterialTheme.typography.body1.merge(),
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                            }
+                        }
                     }
+                    is NetworkResponse.Loading -> {}
+                    is NetworkResponse.Failure -> {}
                 }
             }
         }
         Spacer(Modifier.padding(top = 16.dp))
         Button(
             onClick = {
+                Log.d("test343", "categoryname : $selectionIncomeCategoryOption")
                 val transactionDetailsModel = TransactionDetailsModel(
                     transactionType = selectionOption,
                     transactionAmount = amout,
-                    transactionCategory = selectionIncomeCategoryOption?.categoryName ?: "",
+                    transactionCategory = selectionIncomeCategoryOption ?: "",
                     transactionTitle = note,
                     transactionDate = Calendar.getInstance().time
                 )
-                viewModel.addTransaction(transactionDetailsModel)
+                // viewModel.addTransaction(transactionDetailsModel)
             },
             modifier = Modifier.fillMaxWidth().height(48.dp)
         ) {

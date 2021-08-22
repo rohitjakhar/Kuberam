@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,14 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kuberam.android.component.AddTransactionBottomSheet
 import com.kuberam.android.component.CategoryAddBottomSheet
+import com.kuberam.android.component.LoadingComponent
 import com.kuberam.android.component.MyBottomBar
 import com.kuberam.android.component.TransactionComponenet
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.CustomVerticalLegend
+import com.kuberam.android.utils.NetworkResponse
 import hu.ma.charts.pie.PieChart
 import hu.ma.charts.pie.data.PieChartData
 import hu.ma.charts.pie.data.PieChartEntry
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
@@ -61,6 +65,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
     viewModel.getAllTransaction()
     viewModel.getIncomeData()
     viewModel.getExpenseData()
+    viewModel.getUserDetails()
     val addTransactionSheet =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val drawerState =
@@ -70,6 +75,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
 
     val allTransaction by viewModel.allTransaction
     val categoryData by viewModel.incomeData
+    val userProfile by viewModel.userProfile
     Scaffold(
         scaffoldState = scaffoldState,
         drawerShape = RectangleShape,
@@ -114,20 +120,46 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
             ) {
                 Column {
                     val chartList = arrayListOf<PieChartEntry>()
-                    categoryData.forEach {
-                        chartList.add(
-                            PieChartEntry(
-                                value = it.amount.toFloat(),
-                                label = AnnotatedString(it.categoryName),
-                                color = Color(1538119760)
-                            )
-                        )
+                    when (categoryData) {
+                        is NetworkResponse.Success -> {
+                            categoryData.data?.forEach {
+                                chartList.add(
+                                    PieChartEntry(
+                                        value = it.amount.toFloat(),
+                                        label = AnnotatedString(it.categoryName),
+                                        color = Color(1538119760)
+                                    )
+                                )
+                            }
+                        }
+                        is NetworkResponse.Loading -> {
+                            LoadingComponent()
+                        }
+                        is NetworkResponse.Failure -> {
+                        }
                     }
                     SinglePieChart(chartList)
+                    Row {
+                        Box {
+                            Text("Income: ${userProfile.data?.name}")
+                        }
+                        Box {
+                            Text("Expense: ${userProfile.data?.name}")
+                        }
+                    }
                     Spacer(Modifier.padding(top = 16.dp))
-                    LazyColumn {
-                        items(allTransaction) { item: TransactionDetailsModel ->
-                            TransactionComponenet(item)
+                    when (allTransaction) {
+                        is NetworkResponse.Success -> {
+                            LazyColumn {
+                                items(allTransaction.data!!) { item: TransactionDetailsModel ->
+                                    TransactionComponenet(item)
+                                }
+                            }
+                        }
+                        is NetworkResponse.Loading -> {
+                            LoadingComponent()
+                        }
+                        is NetworkResponse.Failure -> {
                         }
                     }
                 }

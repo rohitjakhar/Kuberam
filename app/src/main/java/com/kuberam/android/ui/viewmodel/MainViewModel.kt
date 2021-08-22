@@ -10,9 +10,10 @@ import com.kuberam.android.data.model.ProfileModel
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.data.remote.RemoteDataSource
 import com.kuberam.android.utils.Constant.INCOME_DATA
+import com.kuberam.android.utils.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,15 +24,20 @@ class MainViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) : ViewModel() {
     var isLogin: MutableState<Boolean> = mutableStateOf(false)
-    val userProfile: MutableState<ProfileModel> = mutableStateOf(ProfileModel("", "", "", ""))
-    val allTransaction: MutableState<List<TransactionDetailsModel>> = mutableStateOf(emptyList())
-    val expenseData: MutableState<List<CategoryDataModel>> = mutableStateOf(emptyList())
-    val incomeData: MutableState<List<CategoryDataModel>> = mutableStateOf(emptyList())
+    val userProfile: MutableState<NetworkResponse<ProfileModel>> =
+        mutableStateOf(NetworkResponse.Loading())
+    val allTransaction: MutableState<NetworkResponse<List<TransactionDetailsModel>>> =
+        mutableStateOf(NetworkResponse.Loading())
+    val expenseData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
+        mutableStateOf(NetworkResponse.Loading())
+    val incomeData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
+        mutableStateOf(NetworkResponse.Loading())
 
     init {
         viewModelScope.launch(IO) {
             isLogin.value = dataStorePreferenceStorage.isLogin.first()
         }
+        getUserDetails()
         getAllTransaction()
         getIncomeData()
         getExpenseData()
@@ -57,9 +63,15 @@ class MainViewModel @Inject constructor(
 
     fun getUserDetails() {
         viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.userProfile.collect {
-                userProfile.value = it
-            }
+            remoteDataSource.getUserProfile(
+                successListener = {
+                    userProfile.value = NetworkResponse.Success(it)
+                },
+                failureListener = {
+                    userProfile.value =
+                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+                }
+            )
         }
     }
 
@@ -91,9 +103,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             remoteDataSource.getAllTransaction(
                 successListener = {
-                    allTransaction.value = it
+                    allTransaction.value = NetworkResponse.Success(data = it)
                 },
                 failureListener = {
+                    allTransaction.value =
+                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
                 }
             )
         }
@@ -103,9 +117,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             remoteDataSource.getIncomeData(
                 successListener = {
-                    incomeData.value = it
+                    incomeData.value = NetworkResponse.Success(it)
                 },
                 failureListener = {
+                    incomeData.value =
+                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
                 }
             )
         }
@@ -115,9 +131,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             remoteDataSource.getExpenseData(
                 successListener = {
-                    expenseData.value = it
+                    expenseData.value = NetworkResponse.Success(it)
                 },
                 failureListener = {
+                    expenseData.value =
+                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
                 }
             )
         }

@@ -1,10 +1,12 @@
 package com.kuberam.android.data.remote
 
+import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.kuberam.android.data.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
+import com.kuberam.android.data.model.ProfileModel
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.utils.Constant.EXPENSE_DATA
 import com.kuberam.android.utils.Constant.INCOME_DATA
@@ -17,6 +19,21 @@ class RemoteDataSource @Inject constructor(
     private val dataStorePreferenceStorage: DataStorePreferenceStorage,
     private val collectionReference: CollectionReference
 ) {
+    suspend fun getUserProfile(
+        successListener: (ProfileModel) -> Unit,
+        failureListener: (Exception) -> Unit
+    ) {
+        try {
+            val userid = dataStorePreferenceStorage.userProfile.first().userId
+            val task =
+                collectionReference.document(userid).get().await()
+            successListener.invoke(task.toObject(ProfileModel::class.java)!!)
+        } catch (e: Exception) {
+            failureListener.invoke(e)
+            Log.d("test232", "Errpr: ${e.localizedMessage}")
+        }
+    }
+
     suspend fun getAllTransaction(
         successListener: (List<TransactionDetailsModel>) -> Unit,
         failureListener: (Exception) -> Unit
