@@ -193,7 +193,6 @@ fun AddTransaction(viewModel: MainViewModel) {
                                             } else {
                                                 Color.DarkGray
                                             }
-
                                         )
                                         .padding(15.dp)
                                 ) {
@@ -260,7 +259,7 @@ fun AddTransaction(viewModel: MainViewModel) {
                     modifier = Modifier.wrapContentWidth(),
                     update = { views ->
                         views.setOnDateChangeListener { calendarView, i, i2, i3 ->
-                            date.value = "$i/${i2+1}/$i3"
+                            date.value = "$i/${i2 + 1}/$i3"
                         }
                     }
                 )

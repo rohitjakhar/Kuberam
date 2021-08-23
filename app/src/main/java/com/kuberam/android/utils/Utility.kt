@@ -69,6 +69,12 @@ internal val PieSampleData =
         legendShape = CircleShape
     )
 
+internal val categoryColors = listOf(
+    Color(0xFFEF5350),
+    Color(0xffec407a),
+    Color(0xFFAB47BC),
+)
+
 @Composable
 internal fun RowScope.CustomVerticalLegend(entries: List<LegendEntry>) {
     Column(
