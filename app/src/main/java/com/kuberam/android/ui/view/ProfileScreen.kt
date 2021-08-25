@@ -1,5 +1,7 @@
 package com.kuberam.android.ui.view
 
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,9 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -33,7 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.kuberam.android.component.LoadingComponent
+import com.kuberam.android.navigation.Screen
+import com.kuberam.android.ui.theme.Typography
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.NetworkResponse
 
@@ -42,8 +47,10 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
 
     viewModel.getUserDetails()
     val context = LocalContext.current
+    val manager = ReviewManagerFactory.create(context)
+    val request = manager.requestReviewFlow()
     Scaffold {
-        val profileModel by viewModel.userProfile
+        val profileModel by viewModel.userProfileData
         Column {
             Icon(
                 Icons.Default.ArrowBack,
@@ -107,16 +114,71 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     }
                 }
             }
-            TextBox(text = "About Us")
-            TextBox(Color.DarkGray, text = "Setting")
-            OutlinedButton(
-                onClick = {
-                    viewModel.logoutUser(context)
+            Text(
+                text = "About Us",
+                style = Typography.h2,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp).align(
+                    Alignment.CenterHorizontally
+                ),
+            )
+            Divider()
+            Text(
+                text = "Term & Condition", style = Typography.h2,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp).align(
+                    Alignment.CenterHorizontally
+                ),
+            )
+            Divider()
+            Text(
+                text = "Write Review", style = Typography.h2,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp).align(
+                    Alignment.CenterHorizontally
+                ).clickable {
+                    request.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            Log.d("tesstreview", "Sucess1")
+                            val reviewInfo = it.result
+                            val flow = manager.launchReviewFlow(context as Activity, reviewInfo)
+                            flow.addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    Log.d("tesstreview", "Sucess2")
+                                } else {
+                                    Log.d("tesstreview", it.exception?.localizedMessage ?: "Error")
+                                }
+                            }
+                        } else {
+                            Log.d("tesstreview", it.exception?.localizedMessage ?: "Error")
+                        }
+                    }
                 },
-                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
-            ) {
-                Text("Logout")
-            }
+            )
+            Divider()
+            Text(
+                text = "Feedback", style = Typography.h2,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp).align(
+                    Alignment.CenterHorizontally
+                ),
+            )
+            Divider()
+            Text(
+                "Logout", style = Typography.h2,
+                modifier = Modifier.clickable {
+                    viewModel.logoutUser(
+                        context,
+                        successListener = {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.Profile.route) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        failureListener = {}
+                    )
+                }.fillMaxWidth().padding(top = 8.dp, start = 16.dp).align(
+                    Alignment.CenterHorizontally
+                )
+            )
+            Divider()
         }
     }
 }
@@ -124,7 +186,8 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
 @Composable
 fun TextBox(
     color: Color = Color.Red,
-    text: String
+    text: String,
+    clickListener: Any?
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -135,6 +198,8 @@ fun TextBox(
             .background(color)
             .padding(horizontal = 10.dp, vertical = 20.dp)
             .fillMaxWidth()
+            .clickable {
+            }
     ) {
         Column {
             Text(

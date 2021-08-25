@@ -130,7 +130,6 @@ fun AddTransaction(viewModel: MainViewModel) {
             }
         }
         Spacer(Modifier.padding(top = 16.dp))
-
         Row(modifier = Modifier.selectableGroup().fillMaxWidth()) {
             if (selectionOption == INCOME_DATA) {
                 when (incomeCategoryList) {
@@ -162,6 +161,7 @@ fun AddTransaction(viewModel: MainViewModel) {
                                 }
                             }
                         }
+                        Text("Add Category")
                     }
                     is NetworkResponse.Loading -> {
                         // TODO: 8/22/21 Loding State 
@@ -211,14 +211,33 @@ fun AddTransaction(viewModel: MainViewModel) {
         Spacer(Modifier.padding(top = 16.dp))
         Button(
             onClick = {
-                val transactionDetailsModel = TransactionDetailsModel(
-                    transactionType = selectionOption,
-                    transactionAmount = amout,
-                    transactionCategory = selectionIncomeCategoryOption ?: "",
-                    transactionTitle = note,
-                    transactionDate = Calendar.getInstance().time
-                )
-                // viewModel.addTransaction(transactionDetailsModel)
+                when {
+                    selectionOption.isEmpty() -> {
+                    }
+
+                    amout.isEmpty() -> {
+                    }
+
+                    note.isEmpty() -> {
+                    }
+                    else -> {
+                        val transactionDetailsModel = TransactionDetailsModel(
+                            transactionId = System.currentTimeMillis().toString(),
+                            transactionType = selectionOption,
+                            transactionAmount = amout,
+                            transactionCategory = selectionIncomeCategoryOption ?: "",
+                            transactionTitle = note,
+                            transactionDate = Calendar.getInstance().time
+                        )
+                        viewModel.addTransaction(
+                            transactionDetailsModel,
+                            successListener = {
+                            },
+                            failureListener = {
+                            }
+                        )
+                    }
+                }
             },
             modifier = Modifier.fillMaxWidth().height(48.dp)
         ) {

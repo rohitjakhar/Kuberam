@@ -3,11 +3,13 @@ package com.kuberam.android.data
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.kuberam.android.data.model.ProfileModel
+import com.kuberam.android.data.model.ProfileDataModel
 import com.kuberam.android.utils.PreferenceDataStore
+import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_DARK_THEME
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_EMAIL
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_IS_FIRST_TIME
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_IS_LOGIN
+import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_LOCK_ENABLE
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_NAME
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_PROFILE_URL
 import com.kuberam.android.utils.PreferenceDataStore.PreferenceKey.PREF_USER_ID
@@ -28,14 +30,25 @@ class DataStorePreferenceStorage @Inject constructor(
         get() = dataStore.data.map {
             it[PREF_IS_LOGIN] ?: false
         }
-    override val isFirstTime: Flow<Boolean>
+
+    override val isLockEnable: Flow<Boolean>
         get() = dataStore.data.map {
-            it[PREF_IS_FIRST_TIME] ?: false
+            it[PREF_LOCK_ENABLE] ?: false
         }
 
-    override val userProfile: Flow<ProfileModel>
+    override val isFirstTime: Flow<Boolean>
         get() = dataStore.data.map {
-            ProfileModel(
+            it[PREF_IS_FIRST_TIME] ?: true
+        }
+
+    override val isDarkTheme: Flow<Boolean>
+        get() = dataStore.data.map {
+            it[PREF_DARK_THEME] ?: false
+        }
+
+    override val userProfileData: Flow<ProfileDataModel>
+        get() = dataStore.data.map {
+            ProfileDataModel(
                 name = it[PREF_NAME] ?: "",
                 email = it[PREF_EMAIL] ?: "",
                 profileUrl = it[PREF_PROFILE_URL] ?: "",
@@ -49,18 +62,30 @@ class DataStorePreferenceStorage @Inject constructor(
         }
     }
 
+    override suspend fun isLockEnable(isLockEnable: Boolean) {
+        dataStore.edit {
+            it[PREF_LOCK_ENABLE] = isLockEnable
+        }
+    }
+
+    override suspend fun darkTheme(isDarkTheme: Boolean) {
+        dataStore.edit {
+            it[PREF_DARK_THEME] = isDarkTheme
+        }
+    }
+
     override suspend fun firstTime(isFirstTime: Boolean) {
         dataStore.edit {
             it[PREF_IS_FIRST_TIME] = isFirstTime
         }
     }
 
-    override suspend fun saveProfile(userProfile: ProfileModel) {
+    override suspend fun saveProfile(userProfileData: ProfileDataModel) {
         dataStore.edit {
-            it[PREF_NAME] = userProfile.name
-            it[PREF_EMAIL] = userProfile.email
-            it[PREF_PROFILE_URL] = userProfile.profileUrl
-            it[PREF_USER_ID] = userProfile.userId
+            it[PREF_NAME] = userProfileData.name
+            it[PREF_EMAIL] = userProfileData.email
+            it[PREF_PROFILE_URL] = userProfileData.profileUrl
+            it[PREF_USER_ID] = userProfileData.userId
         }
     }
 

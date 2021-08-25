@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Kuberam</string>
     <string name="com_auth0_domain">rohitjakhar.us.auth0.com</string>
+    <string name="onboard_text1">Text Try</string>
+    <string name="onbaord_title1">Title 1</string>
+    <string name="transaction_notification_channel_id">Add Transaction</string>
 </resources>

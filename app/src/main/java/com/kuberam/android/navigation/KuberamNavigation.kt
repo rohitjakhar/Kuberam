@@ -9,13 +9,16 @@ import androidx.compose.runtime.Composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.kuberam.android.ui.view.AuthScreen
 import com.kuberam.android.ui.view.DashboardScreen
+import com.kuberam.android.ui.view.OnBoardScreen
 import com.kuberam.android.ui.view.ProfileScreen
 import com.kuberam.android.ui.view.SplashScreen
 import com.kuberam.android.ui.view.TransactionDetails
 import com.kuberam.android.ui.viewmodel.MainViewModel
 
+@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
@@ -23,7 +26,7 @@ fun KuberamNavigation(viewModel: MainViewModel) {
     val navController = rememberAnimatedNavController()
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screen.SplashScreen.route
+        startDestination = Screen.DashboardScreen.route
     ) {
         composable(Screen.Login.route) {
             AuthScreen(navController, viewModel)
@@ -48,6 +51,9 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(Screen.SplashScreen.route) {
             SplashScreen(navController, viewModel)
+        }
+        composable(Screen.OnBoardScreen.route) {
+            OnBoardScreen(navController)
         }
     }
 }

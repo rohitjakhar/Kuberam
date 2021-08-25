@@ -2,17 +2,21 @@ package com.kuberam.android.utils
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.kuberam.android.data.model.ProfileModel
+import com.kuberam.android.data.model.ProfileDataModel
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceDataStore {
     val isLogin: Flow<Boolean>
     val isFirstTime: Flow<Boolean>
-    val userProfile: Flow<ProfileModel>
+    val userProfileData: Flow<ProfileDataModel>
+    val isLockEnable: Flow<Boolean>
+    val isDarkTheme: Flow<Boolean>
 
     suspend fun isLogin(isLogin: Boolean)
+    suspend fun isLockEnable(isLockEnable: Boolean)
+    suspend fun darkTheme(isDarkTheme: Boolean)
     suspend fun firstTime(isFirstTime: Boolean)
-    suspend fun saveProfile(userProfile: ProfileModel)
+    suspend fun saveProfile(userProfileData: ProfileDataModel)
     suspend fun clearData()
 
     object PreferenceKey {
@@ -22,6 +26,8 @@ interface PreferenceDataStore {
         val PREF_EMAIL = stringPreferencesKey(PREFERENCE_EMAIL)
         val PREF_PROFILE_URL = stringPreferencesKey(PREFERENCE_PROFILE_URL)
         val PREF_USER_ID = stringPreferencesKey(PREFERENCE_USER_ID)
+        val PREF_LOCK_ENABLE = booleanPreferencesKey(PREFERENCE_LOCK_ENABLE)
+        val PREF_DARK_THEME = booleanPreferencesKey(PREFERENCE_DARK_THEME)
     }
 
     companion object {
@@ -31,5 +37,7 @@ interface PreferenceDataStore {
         const val PREFERENCE_EMAIL = "email"
         const val PREFERENCE_PROFILE_URL = ""
         const val PREFERENCE_USER_ID = ""
+        const val PREFERENCE_LOCK_ENABLE = "lock_enable"
+        const val PREFERENCE_DARK_THEME = "dark_theme"
     }
 }

@@ -1,32 +1,33 @@
 package com.kuberam.android.ui.view
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.auth0.android.Auth0
-import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.callback.Callback
-import com.auth0.android.provider.WebAuthProvider
-import com.auth0.android.result.Credentials
-import com.auth0.android.result.UserProfile
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.kuberam.android.data.model.ProfileModel
+import com.kuberam.android.R
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
-import com.kuberam.android.utils.Constant.USER_COLLECTION
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.kuberam.android.utils.NetworkResponse
 
 @Composable
 fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
@@ -34,72 +35,48 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
         "n1t1L4rqRSFnrnoYrnAEQhHg9svWCcqu",
         "rohitjakhar.us.auth0.com"
     )
+
     val context = LocalContext.current
-    val scrop = rememberCoroutineScope()
-    Scaffold {
+    Surface(
+        color = Color.Gray,
+        modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(bottom = 50.dp),
+        shape = RoundedCornerShape(60.dp).copy(topEnd = ZeroCornerSize, topStart = ZeroCornerSize)
+    ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceAround
         ) {
+            Image(
+                painter = painterResource(R.drawable.ic_sign_in),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(400.dp)
+            )
             Button(
                 onClick = {
-                    WebAuthProvider.login(auth)
-                        .withScheme("demo")
-                        .withScope("openid profile email")
-                        .start(
-                            context,
-                            object : Callback<Credentials, AuthenticationException> {
-                                override fun onFailure(error: AuthenticationException) {
-                                }
-
-                                override fun onSuccess(result: Credentials) {
-                                    loadProfile(result.accessToken)
-                                }
-
-                                private fun loadProfile(accessToken: String) {
-                                    val clinet = AuthenticationAPIClient(auth)
-                                    clinet.userInfo(accessToken)
-                                        .start(object :
-                                                Callback<UserProfile, AuthenticationException> {
-                                                override fun onFailure(error: AuthenticationException) {
-                                                }
-
-                                                override fun onSuccess(result: UserProfile) {
-                                                    getDataFromFirebase(result)
-                                                }
-
-                                                private fun getDataFromFirebase(result: UserProfile) {
-                                                    val userProfile = ProfileModel(
-                                                        name = result.name ?: "",
-                                                        email = result.email ?: "",
-                                                        profileUrl = result.pictureURL ?: "",
-                                                        userId = result.getId() ?: ""
-                                                    )
-                                                    result.getId()?.let {
-                                                        scrop.launch(Dispatchers.IO) {
-                                                            Firebase.firestore.collection(
-                                                                USER_COLLECTION
-                                                            )
-                                                                .document(it)
-                                                                .set(userProfile)
-                                                                .addOnSuccessListener {
-                                                                    viewModel.changeLogin(true)
-                                                                    viewModel.saveProfile(userProfile)
-                                                                    navController.navigate(Screen.DashboardScreen.route)
-                                                                }
-                                                                .addOnFailureListener {
-                                                                }
-                                                        }
-                                                    }
-                                                }
-                                            })
-                                }
-                            }
-                        )
-                }
+                    viewModel.loginuser(
+                        context,
+                        auth0 = auth
+                    )
+                    when (viewModel.loginState.value) {
+                        is NetworkResponse.Success -> {
+                            Log.d("test343", "Success")
+                            navController.navigate(Screen.DashboardScreen.route)
+                        }
+                        is NetworkResponse.Failure -> {
+                            Log.d("test343", "Failed: ${viewModel.loginState.value.message}")
+                        }
+                        is NetworkResponse.Loading -> {
+                            Log.d("test343", "Loading")
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp).height(50.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = ButtonDefaults.elevation(defaultElevation = 16.dp),
+                contentPadding = PaddingValues(16.dp)
             ) {
-                Text("Get Started")
+                Text("Continue With Auth0")
             }
         }
     }

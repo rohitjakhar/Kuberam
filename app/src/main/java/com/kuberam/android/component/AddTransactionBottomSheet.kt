@@ -2,9 +2,10 @@ package com.kuberam.android.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DrawerDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -21,7 +22,7 @@ fun AddTransactionBottomSheet(
 ) {
     ModalBottomSheetLayout(
         sheetState = addTransactionSheet,
-        sheetShape = MaterialTheme.shapes.large,
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetContent = {
             Box(
                 Modifier

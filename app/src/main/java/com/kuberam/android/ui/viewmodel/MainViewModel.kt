@@ -5,9 +5,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auth0.android.Auth0
 import com.kuberam.android.data.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
-import com.kuberam.android.data.model.ProfileModel
+import com.kuberam.android.data.model.ProfileDataModel
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.data.remote.RemoteDataSource
 import com.kuberam.android.utils.Constant.INCOME_DATA
@@ -26,7 +27,7 @@ class MainViewModel @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) : ViewModel() {
     var isLogin: MutableState<Boolean> = mutableStateOf(false)
-    val userProfile: MutableState<NetworkResponse<ProfileModel>> =
+    val userProfileData: MutableState<NetworkResponse<ProfileDataModel>> =
         mutableStateOf(NetworkResponse.Loading())
     val allTransaction: MutableState<NetworkResponse<List<TransactionDetailsModel>>> =
         mutableStateOf(NetworkResponse.Loading())
@@ -34,12 +35,40 @@ class MainViewModel @Inject constructor(
         mutableStateOf(NetworkResponse.Loading())
     val incomeData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
         mutableStateOf(NetworkResponse.Loading())
+    val loginState: MutableState<NetworkResponse<String>> =
+        mutableStateOf(NetworkResponse.Loading())
+    val firstTime: MutableState<Boolean> = mutableStateOf(false)
+    val appLock: MutableState<Boolean> = mutableStateOf(false)
+    val darkTheme: MutableState<Boolean> = mutableStateOf(false)
 
-    init {
-        getUserDetails()
-        getAllTransaction()
-        getIncomeData()
-        getExpenseData()
+    fun firstTime() {
+        viewModelScope.launch(IO) {
+            firstTime.value = dataStorePreferenceStorage.isFirstTime.first()
+        }
+    }
+
+    fun changeFirstTime() {
+        viewModelScope.launch(IO) {
+            dataStorePreferenceStorage.firstTime(false)
+        }
+    }
+
+    fun checkAppLock() {
+        viewModelScope.launch(IO) {
+            appLock.value = dataStorePreferenceStorage.isLockEnable.first()
+        }
+    }
+
+    fun checkTheme() {
+        viewModelScope.launch(IO) {
+            darkTheme.value = dataStorePreferenceStorage.isDarkTheme.first()
+        }
+    }
+
+    fun changeTheme(isDarkTheme: Boolean) {
+        viewModelScope.launch(IO) {
+            dataStorePreferenceStorage.darkTheme(isDarkTheme)
+        }
     }
 
     fun checkLogin() {
@@ -54,9 +83,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveProfile(userProfile: ProfileModel) {
+    fun saveProfile(userProfileData: ProfileDataModel) {
         viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.saveProfile(userProfile)
+            dataStorePreferenceStorage.saveProfile(userProfileData)
         }
     }
 
@@ -70,17 +99,21 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             remoteDataSource.getUserProfile(
                 successListener = {
-                    userProfile.value = NetworkResponse.Success(it)
+                    userProfileData.value = NetworkResponse.Success(it)
                 },
                 failureListener = {
-                    userProfile.value =
+                    userProfileData.value =
                         NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
                 }
             )
         }
     }
 
-    fun addTransaction(transactionDetailsModel: TransactionDetailsModel) {
+    fun addTransaction(
+        transactionDetailsModel: TransactionDetailsModel,
+        successListener: () -> Unit,
+        failureListener: () -> Unit
+    ) {
         viewModelScope.launch(IO) {
             remoteDataSource.addTransaction(
                 transactionDetailsModel,
@@ -97,8 +130,10 @@ class MainViewModel @Inject constructor(
                         addExpenseData(categoryDataModel)
                         updateTotalExpenseDate(transactionDetailsModel.transactionAmount.toLong())
                     }
+                    successListener.invoke()
                 },
                 failureListener = {
+                    failureListener.invoke()
                 }
             )
         }
@@ -196,14 +231,87 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun logoutUser(context: Context) {
+    fun loginuser(
+        context: Context,
+        auth0: Auth0,
+    ) {
+        remoteDataSource.loginUser(
+            context, auth0,
+            successListener = {
+                remoteDataSource.loadProfile(
+                    it.accessToken,
+                    auth0,
+                    successListener = {
+                        val profileModel = ProfileDataModel(
+                            name = it.name ?: "",
+                            email = it.email ?: "",
+                            profileUrl = it.pictureURL ?: "",
+                            userId = it.getId() ?: "",
+                        )
+                        viewModelScope.launch(IO) {
+                            remoteDataSource.addUserToFirebase(
+                                userid = profileModel.userId,
+                                profileDataModel = profileModel,
+                                successListener = {
+                                    changeLogin(true)
+                                    saveProfile(
+                                        profileModel
+                                    )
+                                    loginState.value = NetworkResponse.Success("Success")
+                                },
+                                failureListener = {
+                                    loginState.value = NetworkResponse.Failure(
+                                        it.localizedMessage ?: "Unknown Error"
+                                    )
+                                }
+                            )
+                        }
+                    },
+                    failureListener = {
+                        loginState.value =
+                            NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+                    }
+                )
+            },
+            failureListener = {
+                loginState.value = NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+            }
+        )
+    }
+
+    fun logoutUser(context: Context, successListener: () -> Unit, failureListener: () -> Unit) {
         viewModelScope.launch(IO) {
             remoteDataSource.logoutUser(
                 context = context,
                 successListener = {
+                    successListener.invoke()
                 },
                 failureListener = {
+                    failureListener.invoke()
                 }
+            )
+        }
+    }
+
+    fun deleteTransaction(transactionDetailsModel: TransactionDetailsModel) {
+        viewModelScope.launch(IO) {
+            remoteDataSource.deleteTransaction(
+                transactionDetailsModel,
+                successListener = {
+                    val categoryDataModel = CategoryDataModel(
+                        amount = -transactionDetailsModel.transactionAmount.toLong(),
+                        categoryName = transactionDetailsModel.transactionCategory,
+                        transactionType = transactionDetailsModel.transactionType
+                    )
+                    if (transactionDetailsModel.transactionType == INCOME_DATA) {
+                        addIncomeData(categoryDataModel)
+                        updateTotalIncomeDate(categoryDataModel.amount)
+                    } else {
+                        addExpenseData(categoryDataModel)
+                        updateTotalExpenseDate(categoryDataModel.amount)
+                    }
+                },
+                failureListener = {}
             )
         }
     }

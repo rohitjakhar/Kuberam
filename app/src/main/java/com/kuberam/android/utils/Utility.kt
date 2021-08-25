@@ -36,14 +36,6 @@ internal fun buildValuePercentString(item: LegendEntry) = buildAnnotatedString {
         }
         append(" ")
     }
-
-    /*  withStyle(
-          style = MaterialTheme.typography.caption.toSpanStyle()
-              .copy(color = MaterialTheme.colors.secondary)
-      ) {
-          val percentString = item.percent.roundToInt().toString()
-          append("($percentString %)")
-      }*/
 }
 
 internal val PieSampleData =
@@ -73,6 +65,18 @@ internal val categoryColors = listOf(
     Color(0xFFEF5350),
     Color(0xffec407a),
     Color(0xFFAB47BC),
+    Color(0xFFBF3312),
+    Color(0xFFE83A59),
+    Color(0xFF51E1ED),
+    Color(0xFF383CC1),
+    Color(0xFF03203C),
+    Color(0xFF4DD637),
+    Color(0xFF50DBB4),
+    Color(0xFFEDC126),
+    Color(0xFFC7C11A),
+    Color(0xfFFF6666),
+    Color(0xFF6A1B4D),
+    Color(0xFF03C6C7),
 )
 
 @Composable
