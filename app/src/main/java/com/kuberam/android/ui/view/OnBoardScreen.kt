@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
@@ -68,8 +69,7 @@ fun BottomSection(
         FloatingActionButton(
             onClick = onNextClicked,
             modifier = Modifier.align(Alignment.CenterEnd),
-            backgroundColor = Color.Magenta,
-            contentColor = Color.Cyan
+            backgroundColor = MaterialTheme.colors.surface,
         ) {
             if (index + 1 == size) {
                 Icon(Icons.Outlined.Done, contentDescription = "nextimage")

@@ -1,6 +1,5 @@
 package com.kuberam.android.component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,10 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.kuberam.android.data.model.ProfileDataModel
+import com.kuberam.android.ui.theme.Typography
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.NetworkResponse
 
@@ -36,9 +36,9 @@ fun CustomTopSection(
     LaunchedEffect(viewModel.userProfileData.value) {
         viewModel.getUserDetails()
         when (viewModel.userProfileData.value) {
-            is NetworkResponse.Failure -> TODO()
+            is NetworkResponse.Failure -> {
+            }
             is NetworkResponse.Loading -> {
-                Log.d("test34", "loading data")
             }
             is NetworkResponse.Success -> {
                 userProfile.value = viewModel.userProfileData.value.data!!
@@ -46,7 +46,7 @@ fun CustomTopSection(
         }
     }
     Surface(
-        color = Color.Gray,
+        color = MaterialTheme.colors.secondaryVariant,
         modifier = Modifier.wrapContentHeight().fillMaxWidth()
             .padding(bottom = 16.dp),
         shape = RoundedCornerShape(32.dp).copy(
@@ -76,18 +76,19 @@ fun CustomTopSection(
                     modifier = Modifier.padding(end = 16.dp)
                 )
                 Text(
-                    text = "Hi \n${userProfile.value.name}"
+                    text = "Hi \n${userProfile.value.name}",
+                    style = Typography.h1,
                 )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             ) {
                 Box {
-                    Text("Income: ${userProfile.value.totalIncome}")
+                    Text("Income: ${userProfile.value.totalIncome}", style = Typography.h2)
                 }
                 Box {
-                    Text("Expense: ${userProfile.value.totalExpense}")
+                    Text("Expense: ${userProfile.value.totalExpense}", style = Typography.h2)
                 }
             }
         }

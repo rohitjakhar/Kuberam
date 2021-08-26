@@ -1,6 +1,6 @@
 package com.kuberam.android.data.model
 
-data class ProfileDataModel (
+data class ProfileDataModel(
     val name: String = "",
     val email: String = "",
     val profileUrl: String = "",

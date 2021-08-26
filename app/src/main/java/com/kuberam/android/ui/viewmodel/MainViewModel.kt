@@ -10,6 +10,8 @@ import com.kuberam.android.data.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.data.model.ProfileDataModel
 import com.kuberam.android.data.model.TransactionDetailsModel
+import com.kuberam.android.data.remote.AuthRepo
+import com.kuberam.android.data.remote.FetchTransaction
 import com.kuberam.android.data.remote.RemoteDataSource
 import com.kuberam.android.utils.Constant.INCOME_DATA
 import com.kuberam.android.utils.NetworkResponse
@@ -24,7 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val dataStorePreferenceStorage: DataStorePreferenceStorage,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val authRepo: AuthRepo,
+    private val fetchTransaction: FetchTransaction
 ) : ViewModel() {
     var isLogin: MutableState<Boolean> = mutableStateOf(false)
     val userProfileData: MutableState<NetworkResponse<ProfileDataModel>> =
@@ -36,7 +40,7 @@ class MainViewModel @Inject constructor(
     val incomeData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
         mutableStateOf(NetworkResponse.Loading())
     val loginState: MutableState<NetworkResponse<String>> =
-        mutableStateOf(NetworkResponse.Loading())
+        mutableStateOf(NetworkResponse.Failure(""))
     val firstTime: MutableState<Boolean> = mutableStateOf(false)
     val appLock: MutableState<Boolean> = mutableStateOf(false)
     val darkTheme: MutableState<Boolean> = mutableStateOf(false)
@@ -97,7 +101,7 @@ class MainViewModel @Inject constructor(
 
     fun getUserDetails() {
         viewModelScope.launch(IO) {
-            remoteDataSource.getUserProfile(
+            authRepo.getUserProfile(
                 successListener = {
                     userProfileData.value = NetworkResponse.Success(it)
                 },
@@ -141,7 +145,7 @@ class MainViewModel @Inject constructor(
 
     fun getAllTransaction() {
         viewModelScope.launch(IO) {
-            remoteDataSource.getAllTransaction(
+            fetchTransaction.getAllTransaction(
                 successListener = {
                     allTransaction.value = NetworkResponse.Success(data = it)
                 },
@@ -155,7 +159,7 @@ class MainViewModel @Inject constructor(
 
     fun getIncomeData() {
         viewModelScope.launch(IO) {
-            remoteDataSource.getIncomeData(
+            fetchTransaction.getIncomeData(
                 successListener = {
                     incomeData.value = NetworkResponse.Success(it)
                 },
@@ -169,7 +173,7 @@ class MainViewModel @Inject constructor(
 
     fun getExpenseData() {
         viewModelScope.launch(IO) {
-            remoteDataSource.getExpenseData(
+            fetchTransaction.getExpenseData(
                 successListener = {
                     expenseData.value = NetworkResponse.Success(it)
                 },
@@ -235,10 +239,10 @@ class MainViewModel @Inject constructor(
         context: Context,
         auth0: Auth0,
     ) {
-        remoteDataSource.loginUser(
+        authRepo.loginUser(
             context, auth0,
             successListener = {
-                remoteDataSource.loadProfile(
+                authRepo.loadProfile(
                     it.accessToken,
                     auth0,
                     successListener = {
@@ -249,7 +253,7 @@ class MainViewModel @Inject constructor(
                             userId = it.getId() ?: "",
                         )
                         viewModelScope.launch(IO) {
-                            remoteDataSource.addUserToFirebase(
+                            authRepo.addUserToFirebase(
                                 userid = profileModel.userId,
                                 profileDataModel = profileModel,
                                 successListener = {
@@ -279,9 +283,10 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun logoutUser(context: Context, successListener: () -> Unit, failureListener: () -> Unit) {
+    fun logoutUser(auth0: Auth0, context: Context, successListener: () -> Unit, failureListener: () -> Unit) {
         viewModelScope.launch(IO) {
-            remoteDataSource.logoutUser(
+            authRepo.logoutUser(
+                auth = auth0,
                 context = context,
                 successListener = {
                     successListener.invoke()

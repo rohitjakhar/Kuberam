@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">Kuberam</string>
     <string name="com_auth0_domain">rohitjakhar.us.auth0.com</string>
-    <string name="onboard_text1">Text Try</string>
-    <string name="onbaord_title1">Title 1</string>
     <string name="transaction_notification_channel_id">Add Transaction</string>
+    <string name="onbaord_title1">Manage All Money Flow</string>
+    <string name="onbaord_title2">Secure with Auth0</string>
+    <string name="onbaord_title3">Backup</string>
+    <string name="onboard_text1">Add All transaction</string>
+    <string name="onboard_text2">Your Account is secure with Auth0</string>
+    <string name="onboard_text3">Access your data at any time</string>
+
+    <string name="client_id">n1t1L4rqRSFnrnoYrnAEQhHg9svWCcqu</string>
+    <string name="domain">rohitjakhar.us.auth0.com</string>
 </resources>

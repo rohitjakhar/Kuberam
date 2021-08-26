@@ -9,21 +9,26 @@ import androidx.compose.ui.unit.sp
 import com.kuberam.android.R
 
 // Set of Material typography styles to start with
-val Actor = FontFamily(
+val Amiko = FontFamily(
     Font(R.font.amiko),
     Font(R.font.amiko_semibold, weight = FontWeight.SemiBold),
     Font(R.font.amiko_bold, weight = FontWeight.Bold),
 )
 val Typography = Typography(
     body1 = TextStyle(
-        fontFamily = Actor,
+        fontFamily = Amiko,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
+    h1 = TextStyle(
+        fontFamily = Amiko,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp
+    ),
     h2 = TextStyle(
-        fontFamily = Actor,
+        fontFamily = Amiko,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp,
+        fontSize = 24.sp
     )
 
 /* Other default text styles to override

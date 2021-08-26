@@ -33,7 +33,7 @@ fun TransactionComponenet(transactionDetailsModel: TransactionDetailsModel) {
         modifier = Modifier
             .padding(15.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xff51E1ED))
+            .background(MaterialTheme.colors.primary)
             .padding(horizontal = 10.dp, vertical = 20.dp)
             .fillMaxWidth()
     ) {

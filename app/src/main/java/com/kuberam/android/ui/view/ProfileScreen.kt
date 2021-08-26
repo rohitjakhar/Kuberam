@@ -1,6 +1,9 @@
 package com.kuberam.android.ui.view
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -35,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
+import com.auth0.android.Auth0
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.kuberam.android.R
 import com.kuberam.android.component.LoadingComponent
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.theme.Typography
@@ -49,6 +54,10 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
     val context = LocalContext.current
     val manager = ReviewManagerFactory.create(context)
     val request = manager.requestReviewFlow()
+    val auth0 = Auth0(
+        domain = context.resources.getString(R.string.domain),
+        clientId = context.resources.getString(R.string.client_id)
+    )
     Scaffold {
         val profileModel by viewModel.userProfileData
         Column {
@@ -135,19 +144,26 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     Alignment.CenterHorizontally
                 ).clickable {
                     request.addOnCompleteListener {
+                        val uri = Uri.parse("market://details?id=" + context.packageName)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
                         if (it.isSuccessful) {
                             Log.d("tesstreview", "Sucess1")
                             val reviewInfo = it.result
                             val flow = manager.launchReviewFlow(context as Activity, reviewInfo)
                             flow.addOnCompleteListener {
                                 if (it.isSuccessful) {
-                                    Log.d("tesstreview", "Sucess2")
                                 } else {
-                                    Log.d("tesstreview", it.exception?.localizedMessage ?: "Error")
+                                    try {
+                                        context.startActivity(intent)
+                                    } catch (activityNotFound: ActivityNotFoundException) {
+                                    }
                                 }
                             }
                         } else {
-                            Log.d("tesstreview", it.exception?.localizedMessage ?: "Error")
+                            try {
+                                context.startActivity(intent)
+                            } catch (activityNotFound: ActivityNotFoundException) {
+                            }
                         }
                     }
                 },
@@ -164,7 +180,8 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                 "Logout", style = Typography.h2,
                 modifier = Modifier.clickable {
                     viewModel.logoutUser(
-                        context,
+                        auth0 = auth0,
+                        context = context,
                         successListener = {
                             navController.navigate(Screen.Login.route) {
                                 popUpTo(Screen.Profile.route) {
@@ -179,48 +196,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                 )
             )
             Divider()
-        }
-    }
-}
-
-@Composable
-fun TextBox(
-    color: Color = Color.Red,
-    text: String,
-    clickListener: Any?
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .padding(15.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(color)
-            .padding(horizontal = 10.dp, vertical = 20.dp)
-            .fillMaxWidth()
-            .clickable {
-            }
-    ) {
-        Column {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.h5
-            )
-        }
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.Blue)
-                .padding(10.dp)
-        ) {
-            Icon(
-                Icons.Default.ArrowForward,
-                contentDescription = "Play",
-                tint = Color.White,
-                modifier = Modifier.size(16.dp)
-            )
         }
     }
 }

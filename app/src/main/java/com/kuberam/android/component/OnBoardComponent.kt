@@ -3,7 +3,10 @@ package com.kuberam.android.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kuberam.android.utils.OnBoardItem
@@ -25,16 +29,17 @@ fun OnBoardComponent(item: OnBoardItem, navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(painter = painterResource(item.image), contentDescription = "image")
+        Spacer(modifier = Modifier.padding(16.dp))
         Text(
             text = stringResource(item.title),
-            fontSize = 24.sp,
-            color = Color.Blue,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.h2,
+            color = MaterialTheme.colors.secondary
         )
+        Spacer(modifier = Modifier.padding(6.dp))
         Text(
             text = stringResource(item.text),
-            color = Color.LightGray,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1,
         )
     }
 } 

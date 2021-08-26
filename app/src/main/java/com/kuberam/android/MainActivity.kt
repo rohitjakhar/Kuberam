@@ -37,9 +37,9 @@ class MainActivity : FragmentActivity() {
             viewModel.checkTheme()
         }
         val darkMode = viewModel.darkTheme.value
-        KuberamTheme(darkTheme = darkMode) {
+        KuberamTheme(darkTheme = false) {
             // A surface container using the 'background' color from the theme
-            Surface(color = MaterialTheme.colors.background) {
+            Surface {
                 KuberamNavigation(viewModel)
             }
         }

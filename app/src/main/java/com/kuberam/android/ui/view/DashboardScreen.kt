@@ -71,9 +71,8 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
             MyBottomDrawer(
                 drawerState = drawerState,
                 viewModel = viewModel,
-                categoryAddSheet,
-                addTransactionSheet,
-                innerPaddding
+                categoryAddSheet = categoryAddSheet,
+                innerPaddding = innerPaddding
             )
         }
     )

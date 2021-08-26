@@ -32,12 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -58,7 +53,6 @@ import kotlinx.coroutines.launch
 fun MyBottomDrawer(
     drawerState: BottomDrawerState,
     viewModel: MainViewModel,
-    addTransactionSheet: ModalBottomSheetState,
     categoryAddSheet: ModalBottomSheetState,
     innerPaddding: PaddingValues
 ) {
@@ -69,7 +63,6 @@ fun MyBottomDrawer(
     val expenseCategoryData by viewModel.expenseData
     val userProfile by viewModel.userProfileData
     val darkTheme = remember { mutableStateOf(false) }
-
 
     LaunchedEffect(key1 = viewModel.darkTheme, viewModel.appLock) {
         viewModel.checkTheme()
@@ -133,7 +126,7 @@ fun MyBottomDrawer(
                 Divider(color = Color.LightGray)
             }
         },
-        modifier = androidx.compose.ui.Modifier.padding(innerPaddding),
+        modifier = Modifier.padding(innerPaddding),
         gesturesEnabled = false
     ) {
         Column {
@@ -198,9 +191,9 @@ fun MyBottomDrawer(
                 pagerState,
             ) { page ->
                 if (page == 0) {
-                    SinglePieChart(incomeChartList)
+                    SinglePieChart(incomeChartList, title = "Income")
                 } else {
-                    SinglePieChart(expenseChartList)
+                    SinglePieChart(expenseChartList, "Expense")
                 }
             }
 
