@@ -141,11 +141,16 @@ class RemoteDataSource @Inject constructor(
     }
 
     suspend fun addFeedback(
-        feedbackModel: FeedbackModel,
+        feedbackText: String,
         successListener: (String) -> Unit,
         failureListener: (Exception) -> Unit
     ) {
         try {
+            val feedbackModel = FeedbackModel(
+                userId = dataStorePreferenceStorage.userProfileData.first().userId,
+                userName = dataStorePreferenceStorage.userProfileData.first().name,
+                feedback = feedbackText
+            )
             feedbackCollectionReference.document().set(feedbackModel).await()
             successListener.invoke("Added")
         } catch (e: Exception) {

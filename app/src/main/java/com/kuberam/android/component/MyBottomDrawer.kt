@@ -115,7 +115,6 @@ fun MyBottomDrawer(
                         Text(text = "Enable Lock")
                     }
                     Switch(
-
                         checked = lockCheckState.value,
                         onCheckedChange = { lockCheckState.value = it },
                         modifier = Modifier.align(

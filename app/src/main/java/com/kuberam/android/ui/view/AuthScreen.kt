@@ -19,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import com.kuberam.android.R
 import com.kuberam.android.component.LoadingComponent
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.ButtonBackground
 import com.kuberam.android.utils.NetworkResponse
 
 @Composable
@@ -41,6 +43,12 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
         context.resources.getString(R.string.client_id),
         context.resources.getString(R.string.domain),
     )
+
+    val isDarkTheme =
+        produceState(initialValue = false, key1 = viewModel.darkTheme.value) {
+            viewModel.checkTheme()
+            value = viewModel.darkTheme.value
+        }
 
     LaunchedEffect(key1 = viewModel.loginState.value) {
         when (viewModel.loginState.value) {
@@ -62,14 +70,13 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
         modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(bottom = 50.dp),
         shape = RoundedCornerShape(60.dp).copy(topEnd = ZeroCornerSize, topStart = ZeroCornerSize),
         elevation = 2.dp,
-        color = MaterialTheme.colors.onSurface
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
-            if (isLoading.value){
+            if (isLoading.value) {
                 LoadingComponent()
             }
             Image(
@@ -88,11 +95,11 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                 shape = RoundedCornerShape(8.dp),
                 elevation = ButtonDefaults.elevation(defaultElevation = 16.dp),
                 contentPadding = PaddingValues(16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = ButtonBackground(isDarkTheme.value))
             ) {
                 Text(
                     "Continue With Auth0",
                     style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondary
                 )
             }
         }

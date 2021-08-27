@@ -22,7 +22,7 @@ class FetchTransaction @Inject constructor(
         val userid = dataStorePreferenceStorage.userProfileData.first().userId
         val task =
             userCollectionReference.document(userid).collection(Constant.TRANSACTION_COLLECTION)
-                .orderBy("transactionDate", Query.Direction.ASCENDING).get().await()
+                .orderBy("transactionDate", Query.Direction.DESCENDING).get().await()
         if (task.isEmpty) {
             failureListener.invoke(Exception("Empty List"))
         } else {

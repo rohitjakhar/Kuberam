@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -66,17 +65,25 @@ fun BottomSection(
     onNextClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-        FloatingActionButton(
+        ExtendedFloatingActionButton(
             onClick = onNextClicked,
-            modifier = Modifier.align(Alignment.CenterEnd),
-            backgroundColor = MaterialTheme.colors.surface,
-        ) {
-            if (index + 1 == size) {
-                Icon(Icons.Outlined.Done, contentDescription = "nextimage")
-            } else {
-                Icon(Icons.Outlined.KeyboardArrowRight, contentDescription = "nextimage")
+            modifier = Modifier.align(Alignment.CenterEnd).padding(bottom = 8.dp, end = 8.dp),
+            backgroundColor = MaterialTheme.colors.secondaryVariant,
+            icon = {
+                if (index + 1 == size) {
+                    Icon(Icons.Outlined.Done, contentDescription = "nextimage")
+                } else {
+                    Icon(Icons.Outlined.KeyboardArrowRight, contentDescription = "nextimage")
+                }
+            },
+            text = {
+                if (index + 1 == size) {
+                    Text("Start")
+                } else {
+                    Text("Next")
+                }
             }
-        }
+        )
         HorizontalPagerIndicator(
             pagerState = state,
             modifier = Modifier.align(Alignment.CenterStart),

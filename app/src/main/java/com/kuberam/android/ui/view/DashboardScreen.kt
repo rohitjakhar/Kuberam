@@ -67,7 +67,6 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center,
         content = { innerPaddding ->
-
             MyBottomDrawer(
                 drawerState = drawerState,
                 viewModel = viewModel,

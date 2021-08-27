@@ -72,6 +72,7 @@ class MainViewModel @Inject constructor(
     fun changeTheme(isDarkTheme: Boolean) {
         viewModelScope.launch(IO) {
             dataStorePreferenceStorage.darkTheme(isDarkTheme)
+            darkTheme.value = isDarkTheme
         }
     }
 
@@ -283,7 +284,12 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun logoutUser(auth0: Auth0, context: Context, successListener: () -> Unit, failureListener: () -> Unit) {
+    fun logoutUser(
+        auth0: Auth0,
+        context: Context,
+        successListener: () -> Unit,
+        failureListener: () -> Unit
+    ) {
         viewModelScope.launch(IO) {
             authRepo.logoutUser(
                 auth = auth0,
@@ -317,6 +323,24 @@ class MainViewModel @Inject constructor(
                     }
                 },
                 failureListener = {}
+            )
+        }
+    }
+
+    fun uploadFeedback(
+        feedbackText: String,
+        successListener: () -> Unit,
+        failureListener: () -> Unit
+    ) {
+        viewModelScope.launch(IO) {
+            remoteDataSource.addFeedback(
+                feedbackText = feedbackText,
+                successListener = {
+                    successListener.invoke()
+                },
+                failureListener = {
+                    failureListener.invoke()
+                }
             )
         }
     }

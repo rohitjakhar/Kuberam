@@ -236,6 +236,7 @@ fun AddTransaction(viewModel: MainViewModel) {
                             failureListener = {
                             }
                         )
+                        viewModel.getAllTransaction()
                     }
                 }
             },
