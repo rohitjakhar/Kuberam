@@ -11,4 +11,8 @@
 
     <string name="client_id">n1t1L4rqRSFnrnoYrnAEQhHg9svWCcqu</string>
     <string name="domain">rohitjakhar.us.auth0.com</string>
+
+    <string name="about_kuberam">Kuberam name is inspired from Hindu\'s God name "Kuber" which is known from money and wealth.\nIn Kuberam you can manage your all transaction witj Auth0 security.</string>
+    <string name="about_developer">Rohit Jakhar is an Android Developer and passionate about technology.</string>
+    <string name="about_auth0">Auth0 is an easy to implement, adaptable authentication and authorization platform</string>
 </resources>

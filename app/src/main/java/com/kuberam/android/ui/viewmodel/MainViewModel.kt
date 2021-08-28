@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.auth0.android.Auth0
-import com.kuberam.android.data.DataStorePreferenceStorage
+import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.data.model.ProfileDataModel
 import com.kuberam.android.data.model.TransactionDetailsModel
@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Currency
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,19 +36,33 @@ class MainViewModel @Inject constructor(
         mutableStateOf(NetworkResponse.Loading())
     val allTransaction: MutableState<NetworkResponse<List<TransactionDetailsModel>>> =
         mutableStateOf(NetworkResponse.Loading())
-    val expenseData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
-        mutableStateOf(NetworkResponse.Loading())
-    val incomeData: MutableState<NetworkResponse<List<CategoryDataModel>>> =
-        mutableStateOf(NetworkResponse.Loading())
+    val expenseData: MutableState<List<CategoryDataModel>> =
+        mutableStateOf(arrayListOf())
+    val incomeData: MutableState<List<CategoryDataModel>> =
+        mutableStateOf(arrayListOf())
     val loginState: MutableState<NetworkResponse<String>> =
         mutableStateOf(NetworkResponse.Failure(""))
     val firstTime: MutableState<Boolean> = mutableStateOf(false)
     val appLock: MutableState<Boolean> = mutableStateOf(false)
     val darkTheme: MutableState<Boolean> = mutableStateOf(false)
+    val currency: MutableState<String> = mutableStateOf("INR")
 
     fun firstTime() {
         viewModelScope.launch(IO) {
             firstTime.value = dataStorePreferenceStorage.isFirstTime.first()
+        }
+    }
+
+    fun changeCurrency(currency: String) {
+        viewModelScope.launch(IO) {
+            dataStorePreferenceStorage.changeCurrency(currency)
+        }
+    }
+
+    fun getCurrentCurrency() {
+        viewModelScope.launch(IO) {
+            currency.value =
+                Currency.getInstance(dataStorePreferenceStorage.currenetCurrency.first()).symbol
         }
     }
 
@@ -60,6 +75,12 @@ class MainViewModel @Inject constructor(
     fun checkAppLock() {
         viewModelScope.launch(IO) {
             appLock.value = dataStorePreferenceStorage.isLockEnable.first()
+        }
+    }
+
+    fun changeAppLock(isLockEnable: Boolean) {
+        viewModelScope.launch {
+            dataStorePreferenceStorage.isLockEnable(isLockEnable)
         }
     }
 
@@ -162,11 +183,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             fetchTransaction.getIncomeData(
                 successListener = {
-                    incomeData.value = NetworkResponse.Success(it)
+                    incomeData.value = it
                 },
                 failureListener = {
                     incomeData.value =
-                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+                        emptyList()
                 }
             )
         }
@@ -176,22 +197,30 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(IO) {
             fetchTransaction.getExpenseData(
                 successListener = {
-                    expenseData.value = NetworkResponse.Success(it)
+                    expenseData.value = it
                 },
                 failureListener = {
                     expenseData.value =
-                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+                        emptyList()
                 }
             )
         }
     }
 
-    fun createCategory(categoryDataModel: CategoryDataModel) {
+    fun createCategory(
+        categoryDataModel: CategoryDataModel,
+        successListener: () -> Unit,
+        failureListener: () -> Unit
+    ) {
         viewModelScope.launch(IO) {
             remoteDataSource.createCategory(
                 categoryDataModel,
-                successListener = {},
-                failureListener = {}
+                successListener = {
+                    successListener.invoke()
+                },
+                failureListener = {
+                    failureListener.invoke()
+                }
             )
         }
     }

@@ -1,14 +1,20 @@
 package com.kuberam.android.utils
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -16,14 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import com.kuberam.android.navigation.Screen
 import hu.ma.charts.legend.data.LegendEntry
-import hu.ma.charts.legend.data.LegendPosition
-import hu.ma.charts.pie.data.PieChartData
-import hu.ma.charts.pie.data.PieChartEntry
 
 @Composable
 internal fun buildValuePercentString(item: LegendEntry) = buildAnnotatedString {
@@ -38,29 +43,13 @@ internal fun buildValuePercentString(item: LegendEntry) = buildAnnotatedString {
     }
 }
 
-internal val PieSampleData =
-    PieChartData(
-        entries = listOf(220f, 54f, 600f, 60f, 140f, 200f).mapIndexed { index, value ->
-            PieChartEntry(
-                value,
-                label = AnnotatedString("Test Chart $index")
-            )
-        },
-        colors = listOf(
-            Color.Black,
-            Color.Blue,
-            Color.Yellow,
-            Color.Red,
-            Color.LightGray,
-            Color.Magenta,
-            Color.Cyan,
-            Color.Green,
-            Color.Gray,
-        ),
-        legendPosition = LegendPosition.Bottom,
-        legendShape = CircleShape
-    )
-
+internal var currentList = listOf(
+    "INR",
+    "USD",
+    "GBP",
+    "EUR",
+    "JPY",
+)
 internal val categoryColors = listOf(
     Color(0xFFEF5350),
     Color(0xffec407a),
@@ -81,10 +70,15 @@ internal val categoryColors = listOf(
 
 @Composable
 internal fun RowScope.CustomVerticalLegend(entries: List<LegendEntry>) {
-    Column(
+    LazyColumn(
         modifier = Modifier.weight(1f),
     ) {
-        entries.forEachIndexed { idx, item ->
+        itemsIndexed(
+            items = entries,
+            key = { index, item ->
+                item.hashCode()
+            }
+        ) { index, item ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 14.dp)
@@ -94,23 +88,60 @@ internal fun RowScope.CustomVerticalLegend(entries: List<LegendEntry>) {
                         .requiredSize(item.shape.size)
                         .background(item.shape.color, item.shape.shape)
                 )
-
                 Spacer(modifier = Modifier.requiredSize(8.dp))
-
                 Text(
                     text = item.text,
                     style = MaterialTheme.typography.caption
                 )
                 Spacer(modifier = Modifier.weight(1f))
-
                 Text(
                     text = buildValuePercentString(item),
                     style = MaterialTheme.typography.caption,
                 )
             }
-
-            if (idx != entries.lastIndex)
+            if (index != entries.lastIndex)
                 Divider()
         }
     }
+}
+
+fun openInBrowser(link: String, context: Context) {
+    context.startActivity(
+        Intent(Intent.ACTION_VIEW).also {
+            it.data = Uri.parse(link)
+        }
+    )
+}
+
+fun bioMetricsPrompts(fr: FragmentActivity, navController: NavController) {
+    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        .setTitle("Unlock")
+        .setSubtitle("Use Finger")
+        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        .build()
+
+    val biometricPrompt = BiometricPrompt(
+        fr,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Toast.makeText(fr, "$errString", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                fr.finish()
+            }
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                navController.navigate(Screen.DashboardScreen.route) {
+                    popUpTo(Screen.DashboardScreen.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    )
+    biometricPrompt.authenticate(promptInfo)
 }

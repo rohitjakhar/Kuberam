@@ -28,15 +28,17 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".NotificationService"
+        <service
+            android:name=".service.NotificationService"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE"/>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_name"/>
+            android:resource="@drawable/ic_stat_name" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@android:color/transparent"/> <!-- [END fcm_default_icon] -->

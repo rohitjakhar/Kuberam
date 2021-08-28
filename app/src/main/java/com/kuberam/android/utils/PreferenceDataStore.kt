@@ -11,12 +11,14 @@ interface PreferenceDataStore {
     val userProfileData: Flow<ProfileDataModel>
     val isLockEnable: Flow<Boolean>
     val isDarkTheme: Flow<Boolean>
+    val currenetCurrency: Flow<String>
 
     suspend fun isLogin(isLogin: Boolean)
     suspend fun isLockEnable(isLockEnable: Boolean)
     suspend fun darkTheme(isDarkTheme: Boolean)
     suspend fun firstTime(isFirstTime: Boolean)
     suspend fun saveProfile(userProfileData: ProfileDataModel)
+    suspend fun changeCurrency(curreny: String)
     suspend fun clearData()
 
     object PreferenceKey {
@@ -28,6 +30,7 @@ interface PreferenceDataStore {
         val PREF_USER_ID = stringPreferencesKey(PREFERENCE_USER_ID)
         val PREF_LOCK_ENABLE = booleanPreferencesKey(PREFERENCE_LOCK_ENABLE)
         val PREF_DARK_THEME = booleanPreferencesKey(PREFERENCE_DARK_THEME)
+        val PREF_CURRENCY = stringPreferencesKey(PREFERENCE_CURRENCY)
     }
 
     companion object {
@@ -39,5 +42,6 @@ interface PreferenceDataStore {
         const val PREFERENCE_USER_ID = ""
         const val PREFERENCE_LOCK_ENABLE = "lock_enable"
         const val PREFERENCE_DARK_THEME = "dark_theme"
+        const val PREFERENCE_CURRENCY = "currency"
     }
 }

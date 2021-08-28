@@ -13,6 +13,5 @@ sealed class Screen(val route: String, val resourceId: String) {
     object OnBoardScreen : Screen("nav_on_board_screen", "Splash Screen")
     object TransactionsScreen : Screen("nav_transaction_list", "All Transaction")
     object AboutScreen : Screen("nav_about", "All Transaction")
-    object FeedbackScreen : Screen("nav_feedback", "All Transaction")
 
 }

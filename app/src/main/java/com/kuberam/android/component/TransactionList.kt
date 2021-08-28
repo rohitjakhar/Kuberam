@@ -18,12 +18,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.kuberam.android.R
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.NetworkResponse
@@ -31,7 +37,10 @@ import com.kuberam.android.utils.NetworkResponse
 @ExperimentalMaterialApi
 @Composable
 fun TransactionList(viewModel: MainViewModel) {
-    val incomeListState = produceState(
+    val transactionComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.transaction_motion)
+    )
+    val transactionListState = produceState(
         initialValue = emptyList<TransactionDetailsModel>(),
         key1 = viewModel.allTransaction.value
     ) {
@@ -44,53 +53,61 @@ fun TransactionList(viewModel: MainViewModel) {
             }
         }
     }
-    LazyColumn {
-        itemsIndexed(
-            items = incomeListState.value,
-            key = { index, item ->
-                item.hashCode()
-            }
-        ) { index, item ->
-            val state = rememberDismissState(
-                confirmStateChange = {
-                    if (it == DismissValue.DismissedToEnd) {
-                        viewModel.deleteTransaction(item)
-                    }
-                    true
+    if (transactionListState.value.isEmpty()) {
+        Box {
+            LottieAnimation(
+                composition = transactionComposition, iterations = LottieConstants.IterateForever
+            )
+        }
+    } else {
+        LazyColumn {
+            itemsIndexed(
+                items = transactionListState.value,
+                key = { index, item ->
+                    item.hashCode()
                 }
-            )
-            SwipeToDismiss(
-                state = state,
-                background = {
-                    val color = when (state.dismissDirection) {
-                        DismissDirection.StartToEnd -> MaterialTheme.colors.error
-                        DismissDirection.EndToStart -> MaterialTheme.colors.error
-                        null -> Color.Transparent
+            ) { index, item ->
+                val state = rememberDismissState(
+                    confirmStateChange = {
+                        if (it == DismissValue.DismissedToStart) {
+                            viewModel.deleteTransaction(item)
+                            viewModel.getAllTransaction()
+                        }
+                        true
                     }
-                    Box(
-                        modifier = Modifier
-                            .padding(18.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(color)
-                            .fillMaxHeight()
-                            .fillMaxWidth(),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
-                        )
-                    }
-                },
-                dismissContent = {
-                    TransactionComponenet(item)
-                },
-                directions = setOf(
-                    DismissDirection.EndToStart,
-                    DismissDirection.StartToEnd
                 )
-            )
+                SwipeToDismiss(
+                    state = state,
+                    background = {
+                        val color = when (state.dismissDirection) {
+                            DismissDirection.StartToEnd -> Color.Transparent
+                            DismissDirection.EndToStart -> MaterialTheme.colors.error
+                            null -> Color.Transparent
+                        }
+                        Box(
+                            modifier = Modifier
+                                .padding(18.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(color)
+                                .fillMaxHeight()
+                                .fillMaxWidth(),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
+                            )
+                        }
+                    },
+                    dismissContent = {
+                        TransactionComponenet(item, viewModel)
+                    },
+                    directions = setOf(
+                        DismissDirection.EndToStart
+                    )
+                )
+            }
         }
     }
 }

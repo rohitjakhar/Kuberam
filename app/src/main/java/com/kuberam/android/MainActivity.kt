@@ -1,12 +1,15 @@
 package com.kuberam.android
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -21,6 +24,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 class MainActivity : FragmentActivity() {
+    @ExperimentalComposeUiApi
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -30,13 +35,15 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    @ExperimentalComposeUiApi
+    @RequiresApi(Build.VERSION_CODES.N)
     @Composable
     private fun KuberamMain(viewModel: MainViewModel) {
         LaunchedEffect(true) {
             viewModel.checkTheme()
         }
         val darkMode = viewModel.darkTheme.value
-        KuberamTheme(darkTheme = false) {
+        KuberamTheme(darkMode) {
             // A surface container using the 'background' color from the theme
             Surface {
                 KuberamNavigation(viewModel)

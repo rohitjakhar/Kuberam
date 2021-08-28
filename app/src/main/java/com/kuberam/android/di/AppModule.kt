@@ -9,7 +9,8 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.kuberam.android.data.DataStorePreferenceStorage.Companion.PREF__DATA_NAME
+import com.kuberam.android.data.local.DataStorePreferenceStorage.Companion.PREF__DATA_NAME
+import com.kuberam.android.utils.Constant.FEEDBACK_COLLECTION
 import com.kuberam.android.utils.Constant.USER_COLLECTION
 import dagger.Module
 import dagger.Provides
@@ -42,5 +43,5 @@ object AppModule {
     @Provides
     @Named("feedbackCollectionReference")
     fun provideFeedbackCollectionRef(): CollectionReference =
-        Firebase.firestore.collection(USER_COLLECTION)
+        Firebase.firestore.collection(FEEDBACK_COLLECTION)
 }

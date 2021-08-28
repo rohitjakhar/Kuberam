@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -28,9 +26,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,13 +41,18 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.auth0.android.Auth0
-import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.review.testing.FakeReviewManager
 import com.kuberam.android.R
 import com.kuberam.android.component.TextBox
 import com.kuberam.android.data.model.ProfileDataModel
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.NetworkResponse
+import com.kuberam.android.utils.cardBackground
+import com.kuberam.android.utils.openInBrowser
+import com.kuberam.android.utils.textBoxBrush
+import com.kuberam.android.utils.textHeadingColor
+import com.kuberam.android.utils.textNormalColor
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
@@ -56,7 +61,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
 
     viewModel.getUserDetails()
     val context = LocalContext.current
-    val manager = ReviewManagerFactory.create(context)
+    val manager = FakeReviewManager(context)
     val request = manager.requestReviewFlow()
     val auth0 = Auth0(
         domain = context.resources.getString(R.string.domain),
@@ -66,7 +71,12 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
     val feedbackModalSheet = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
+    val isDarkTheme =
+        produceState(initialValue = false, key1 = viewModel.darkTheme.value) {
+            value = viewModel.darkTheme.value
+        }
     val profileModel = remember { mutableStateOf(ProfileDataModel()) }
+    val scaffoldState = rememberScaffoldState()
     LaunchedEffect(viewModel.userProfileData.value) {
         viewModel.getUserDetails()
         when (viewModel.userProfileData.value) {
@@ -79,7 +89,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
             }
         }
     }
-    Scaffold {
+    Scaffold(scaffoldState = scaffoldState) {
         Column {
             Icon(
                 Icons.Default.ArrowBack,
@@ -91,9 +101,9 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
             Card(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
-                border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-                backgroundColor = MaterialTheme.colors.secondary,
-                elevation = 16.dp,
+                border = BorderStroke(2.dp, brush = textBoxBrush(isDarkTheme.value)),
+                backgroundColor = cardBackground(isDarkTheme.value),
+                elevation = 26.dp,
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -119,7 +129,8 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = profileModel.value.name,
-                                style = MaterialTheme.typography.h1
+                                style = MaterialTheme.typography.h1,
+                                color = textHeadingColor(isDarkTheme.value)
                             )
                         }
                         Spacer(Modifier.padding(top = 8.dp))
@@ -136,23 +147,31 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                 TextBox(
                     text = "About Us",
                     clickListener = {
-                    }
+                        navController.navigate(Screen.AboutScreen.route)
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
                 )
-                Divider()
                 TextBox(
                     text = "Term & Condition",
                     clickListener = {
-                    }
+                        openInBrowser(
+                            link = "https://sites.google.com/view/kuberam-privacy-policy",
+                            context = context
+                        )
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
                 )
-                Divider()
                 TextBox(
                     text = "Write Review",
                     clickListener = {
+                        val uri = Uri.parse("market://details?id=" + context.packageName)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
                         request.addOnCompleteListener {
-                            val uri = Uri.parse("market://details?id=" + context.packageName)
-                            val intent = Intent(Intent.ACTION_VIEW, uri)
                             if (it.isSuccessful) {
-                                Log.d("tesstreview", "Sucess1")
                                 val reviewInfo = it.result
                                 val flow = manager.launchReviewFlow(context as Activity, reviewInfo)
                                 flow.addOnCompleteListener {
@@ -163,6 +182,8 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                         } catch (activityNotFound: ActivityNotFoundException) {
                                         }
                                     }
+                                }.addOnFailureListener {
+                                    context.startActivity(intent)
                                 }
                             } else {
                                 try {
@@ -170,22 +191,43 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                 } catch (activityNotFound: ActivityNotFoundException) {
                                 }
                             }
+                        }.addOnFailureListener {
+                            context.startActivity(intent)
                         }
-                    }
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
                 )
-                Divider()
                 TextBox(
                     text = "Feedback",
                     clickListener = {
                         scope.launch {
                             if (feedbackModalSheet.isVisible) feedbackModalSheet.hide() else feedbackModalSheet.show()
                         }
-                    }
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
                 )
-                Divider()
+                TextBox(
+                    text = "Share App",
+                    clickListener = {
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.type = "text/plain"
+                        shareIntent.putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Hi!, I am using Kuberam App for managing my all transaction. Let's try it once.\nhttps://play.google.com/store/apps/details?id=${context.packageName} "
+                        )
+                        context.startActivity(Intent.createChooser(shareIntent, "Kuberam App"))
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
+                )
                 TextBox(
                     text = "Logout",
-                    color = MaterialTheme.colors.error,
+                    backgroundColor = MaterialTheme.colors.error,
                     clickListener = {
                         viewModel.logoutUser(
                             auth0 = auth0,
@@ -199,11 +241,12 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                             },
                             failureListener = {}
                         )
-                    }
+                    },
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
                 )
-                Divider()
             }
         }
     }
-    FeedbackModalSheet(feedbackModalSheet, viewModel)
+    FeedbackModalSheet(feedbackModalSheet, viewModel, scaffoldState)
 }

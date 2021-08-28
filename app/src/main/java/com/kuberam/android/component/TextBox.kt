@@ -22,20 +22,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.kuberam.android.utils.textBoxBrush
 
 @Composable
 fun TextBox(
-    color: Color = MaterialTheme.colors.secondary,
+    backgroundColor: Color = MaterialTheme.colors.secondary,
     text: String,
-    clickListener: () -> Unit
+    clickListener: () -> Unit,
+    textColor: Color = MaterialTheme.colors.secondary,
+    isDarkTheme: Boolean
 ) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .padding(15.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(color)
+            .background(brush = textBoxBrush(isDarkTheme))
             .padding(horizontal = 10.dp, vertical = 20.dp)
             .fillMaxWidth()
             .clickable {
@@ -46,7 +50,7 @@ fun TextBox(
             Text(
                 text = text,
                 style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.secondaryVariant
+                color = textColor
             )
         }
         Box(
@@ -54,7 +58,6 @@ fun TextBox(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.secondaryVariant)
                 .padding(10.dp)
         ) {
             Icon(

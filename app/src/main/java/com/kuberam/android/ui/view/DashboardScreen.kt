@@ -1,6 +1,8 @@
 package com.kuberam.android.ui.view
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -17,18 +19,20 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.kuberam.android.component.AddCategoryBottomSheet
 import com.kuberam.android.component.AddTransactionBottomSheet
-import com.kuberam.android.component.CategoryAddBottomSheet
 import com.kuberam.android.component.MyBottomBar
 import com.kuberam.android.component.MyBottomDrawer
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
+@ExperimentalComposeUiApi
+@RequiresApi(Build.VERSION_CODES.N)
 @ExperimentalPagerApi
 @SuppressLint("Range")
 @ExperimentalMaterialApi
@@ -51,7 +55,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
         scaffoldState = scaffoldState,
         drawerShape = RectangleShape,
         bottomBar = {
-            MyBottomBar(drawerState, navController)
+            MyBottomBar(drawerState, navController, viewModel)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -61,7 +65,7 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(8.dp, pressedElevation = 27.dp),
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add", tint = Color.Red)
+                Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         },
         isFloatingActionButtonDocked = true,
@@ -71,10 +75,11 @@ fun DashboardScreen(navController: NavController, viewModel: MainViewModel) {
                 drawerState = drawerState,
                 viewModel = viewModel,
                 categoryAddSheet = categoryAddSheet,
-                innerPaddding = innerPaddding
+                innerPaddding = innerPaddding,
+                navController = navController
             )
         }
     )
-    CategoryAddBottomSheet(categoryAddSheet, viewModel)
-    AddTransactionBottomSheet(addTransactionSheet, viewModel)
+    AddCategoryBottomSheet(categoryAddSheet, viewModel, scaffoldState)
+    AddTransactionBottomSheet(addTransactionSheet, viewModel, categoryAddSheet, scaffoldState)
 }

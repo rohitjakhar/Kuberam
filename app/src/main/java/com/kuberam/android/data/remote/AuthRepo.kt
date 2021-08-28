@@ -9,7 +9,7 @@ import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.UserProfile
 import com.google.firebase.firestore.CollectionReference
-import com.kuberam.android.data.DataStorePreferenceStorage
+import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.ProfileDataModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await

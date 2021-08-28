@@ -1,10 +1,10 @@
 package com.kuberam.android.ui.view
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.view.animation.OvershootInterpolator
-import android.widget.Toast
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
-import androidx.biometric.BiometricPrompt
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -20,10 +20,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.kuberam.android.R
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.bioMetricsPrompts
 import kotlinx.coroutines.delay
+
+const val UPDATE_REQUEST_CODE = 524
 
 @Composable
 fun SplashScreen(
@@ -31,14 +39,28 @@ fun SplashScreen(
     viewModel: MainViewModel
 ) {
     val islogin by viewModel.isLogin
+    val isLockEnable by viewModel.appLock
     val isFirstTime by viewModel.firstTime
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
     val context = LocalContext.current as FragmentActivity
+    val resultLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                // handle after update
+            } else {
+                // handle errors
+            }
+        }
+
+    val appUpdateManager: AppUpdateManager =
+        AppUpdateManagerFactory.create(context.applicationContext)
+
     LaunchedEffect(key1 = true) {
         viewModel.checkLogin()
         viewModel.firstTime()
+        viewModel.checkAppLock()
         scale.animateTo(
             targetValue = 0.3f,
             animationSpec = tween(
@@ -49,22 +71,37 @@ fun SplashScreen(
             )
         )
         delay(1500L)
-        navController.popBackStack()
-        if (isFirstTime) {
-            viewModel.changeFirstTime()
-            navController.navigate(Screen.OnBoardScreen.route)
-        } else {
-            if (islogin) {
-                navController.navigate(Screen.DashboardScreen.route) {
-                    popUpTo(Screen.DashboardScreen.route) {
-                        inclusive = true
-                    }
-                }
-               // showBioMetrictPromopt(context, navController)
+        val appUpdateInfo = appUpdateManager.appUpdateInfo
+        appUpdateInfo.addOnSuccessListener {
+            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                appUpdateManager.startUpdateFlowForResult(
+                    it,
+                    context as Activity,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE),
+                    UPDATE_REQUEST_CODE
+                )
+                resultLauncher.launch(context.intent)
             } else {
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Login.route) {
-                        inclusive = true
+                if (isFirstTime) {
+                    viewModel.changeFirstTime()
+                    navController.navigate(Screen.OnBoardScreen.route)
+                } else {
+                    if (islogin) {
+                        if (isLockEnable) {
+                            bioMetricsPrompts(context, navController)
+                        } else {
+                            navController.navigate(Screen.DashboardScreen.route) {
+                                popUpTo(Screen.DashboardScreen.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    } else {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Login.route) {
+                                inclusive = true
+                            }
+                        }
                     }
                 }
             }
@@ -80,46 +117,4 @@ fun SplashScreen(
             modifier = Modifier.scale(scale.value)
         )
     }
-}
-
-private val biometricsIgnoredErrors = listOf(
-    BiometricPrompt.ERROR_NEGATIVE_BUTTON,
-    BiometricPrompt.ERROR_CANCELED,
-    BiometricPrompt.ERROR_USER_CANCELED,
-    BiometricPrompt.ERROR_NO_BIOMETRICS
-)
-
-private fun showBioMetrictPromopt(fr: FragmentActivity, navController: NavController) {
-    val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Unlcokc")
-        .setSubtitle("Use finger")
-        .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-        .build()
-
-    val buinetricPrompt = BiometricPrompt(
-        fr,
-        object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(fr, "error: ", Toast.LENGTH_SHORT).show()
-                fr.finish()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                fr.finish()
-            }
-
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                navController.navigate(Screen.DashboardScreen.route) {
-                    popUpTo(Screen.DashboardScreen.route) {
-                        inclusive = true
-                    }
-                }
-            }
-        }
-    )
-
-    buinetricPrompt.authenticate(promptInfo)
 }

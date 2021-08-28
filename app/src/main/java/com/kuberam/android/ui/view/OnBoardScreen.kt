@@ -1,38 +1,37 @@
 package com.kuberam.android.ui.view
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
+import com.kuberam.android.component.OnBoardBottomSection
 import com.kuberam.android.component.OnBoardComponent
 import com.kuberam.android.navigation.Screen
+import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.OnBoardItem
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @ExperimentalPagerApi
 @Composable
-fun OnBoardScreen(navController: NavController) {
+fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
     val scope = rememberCoroutineScope()
-
+    val isDarkTheme =
+        produceState(initialValue = false, key1 = viewModel.darkTheme.value) {
+            viewModel.checkTheme()
+            value = viewModel.darkTheme.value
+        }
     Column(Modifier.fillMaxSize()) {
         val items = OnBoardItem.get()
         val state = rememberPagerState(pageCount = items.size)
@@ -41,54 +40,60 @@ fun OnBoardScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize()
                 .weight(0.8f)
         ) { page ->
-            OnBoardComponent(items[page], navController)
+            Card(
+                Modifier
+                    .graphicsLayer {
+                        // Calculate the absolute offset for the current page from the
+                        // scroll position. We use the absolute value which allows us to mirror
+                        // any effects for both directions
+                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+
+                        // We animate the scaleX + scaleY, between 85% and 100%
+                        lerp(
+                            start = 0.55f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        ).also { scale ->
+                            scaleX = scale
+                            scaleY = scale
+                        }
+
+                        // We animate the alpha, between 50% and 100%
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+                    .fillMaxWidth()
+
+                // We animate the alpha, between 50% and 100%
+                /*alpha = lerp(
+                    start = 0.5f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                )*/
+
+            ) {
+                // Card content
+                OnBoardComponent(items[page], navController)
+            }
         }
-        BottomSection(size = items.size, index = state.currentPage, state) {
+        OnBoardBottomSection(
+            size = items.size,
+            index = state.currentPage,
+            state = state,
+            isDarkThem = isDarkTheme.value
+        ) {
             if (state.currentPage + 1 < items.size) {
                 scope.launch { state.scrollToPage(state.currentPage + 1) }
             }
             if (state.currentPage + 1 == items.size) {
                 scope.launch {
+                    viewModel.changeFirstTime()
                     navController.navigate(Screen.Login.route)
                 }
             }
         }
-    }
-}
-
-@ExperimentalPagerApi
-@Composable
-fun BottomSection(
-    size: Int,
-    index: Int,
-    state: PagerState,
-    onNextClicked: () -> Unit
-) {
-    Box(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-        ExtendedFloatingActionButton(
-            onClick = onNextClicked,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(bottom = 8.dp, end = 8.dp),
-            backgroundColor = MaterialTheme.colors.secondaryVariant,
-            icon = {
-                if (index + 1 == size) {
-                    Icon(Icons.Outlined.Done, contentDescription = "nextimage")
-                } else {
-                    Icon(Icons.Outlined.KeyboardArrowRight, contentDescription = "nextimage")
-                }
-            },
-            text = {
-                if (index + 1 == size) {
-                    Text("Start")
-                } else {
-                    Text("Next")
-                }
-            }
-        )
-        HorizontalPagerIndicator(
-            pagerState = state,
-            modifier = Modifier.align(Alignment.CenterStart),
-            indicatorHeight = 10.dp,
-            indicatorWidth = 28.dp
-        )
     }
 }

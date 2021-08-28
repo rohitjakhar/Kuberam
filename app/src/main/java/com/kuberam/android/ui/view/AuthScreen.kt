@@ -1,9 +1,5 @@
 package com.kuberam.android.ui.view
 
-import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,22 +14,27 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.auth0.android.Auth0
 import com.kuberam.android.R
-import com.kuberam.android.component.LoadingComponent
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.ButtonBackground
 import com.kuberam.android.utils.NetworkResponse
+import com.kuberam.android.utils.cardBackground
+import com.kuberam.android.utils.textNormalColor
 
 @Composable
 fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
@@ -50,10 +51,12 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
             value = viewModel.darkTheme.value
         }
 
+    val authComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.auth)
+    )
     LaunchedEffect(key1 = viewModel.loginState.value) {
         when (viewModel.loginState.value) {
             is NetworkResponse.Success -> {
-                Log.d("test4343", "Success")
                 isLoading.value = false
                 navController.navigate(Screen.DashboardScreen.route)
             }
@@ -70,19 +73,20 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
         modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(bottom = 50.dp),
         shape = RoundedCornerShape(60.dp).copy(topEnd = ZeroCornerSize, topStart = ZeroCornerSize),
         elevation = 2.dp,
+        color = cardBackground(isDarkTheme.value)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            if (isLoading.value) {
-                LoadingComponent()
-            }
-            Image(
-                painter = painterResource(R.drawable.ic_sign_in),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(400.dp)
+        ConstraintLayout {
+            val (animation, button) = createRefs()
+
+            LottieAnimation(
+                composition = authComposition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.padding(bottom = 50.dp).constrainAs(animation) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(button.top)
+                }
             )
             Button(
                 onClick = {
@@ -91,7 +95,12 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                         auth0 = auth
                     )
                 },
-                modifier = Modifier.fillMaxWidth().padding(16.dp).height(60.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp).height(60.dp)
+                    .constrainAs(button) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                    },
                 shape = RoundedCornerShape(8.dp),
                 elevation = ButtonDefaults.elevation(defaultElevation = 16.dp),
                 contentPadding = PaddingValues(16.dp),
@@ -100,6 +109,7 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                 Text(
                     "Continue With Auth0",
                     style = MaterialTheme.typography.body1,
+                    color = textNormalColor(isDarkTheme.value)
                 )
             }
         }

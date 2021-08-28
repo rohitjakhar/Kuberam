@@ -2,7 +2,7 @@ package com.kuberam.android.data.remote
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
-import com.kuberam.android.data.DataStorePreferenceStorage
+import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.utils.Constant

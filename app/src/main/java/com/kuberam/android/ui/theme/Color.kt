@@ -16,14 +16,14 @@ val secondaryNight = Color(0xff5157A5)
 val buttonDay = Color(0xff)
 val buttonNight = Color(0xff)
 
-val textHeadingDay = Color(0xff)
-val textHeadingNight = Color(0xff)
+val textHeadingDay = Color(0xff2f3c5b)
+val textHeadingNight = Color(0xffe0ed56)
 
-val textNormalDay = Color(0xff)
-val textNormalNight = Color(0xff)
+val textNormalDay = Color(0xff242d4d)
+val textNormalNight = Color(0xffcdf1f2)
 
-val cardBackgroundDay = Color(0xff)
-val cardBackgroundNight = Color(0xff)
+val cardBackgroundDay = Color(0xff68f0a1)
+val cardBackgroundNight = Color(0xff0d305a)
 
 val topSectionBackGroundDay = Color(0xff2F80ED)
 val topSectionBackGroundMight = Color(0xff1B2846)
