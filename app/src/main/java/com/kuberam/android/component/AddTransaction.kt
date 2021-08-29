@@ -26,6 +26,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -36,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -71,10 +72,12 @@ import java.util.Calendar
 fun AddTransaction(
     viewModel: MainViewModel,
     categorySheetState: ModalBottomSheetState,
-    addTransactionSheetState: ModalBottomSheetState
+    addTransactionSheetState: ModalBottomSheetState,
+    scaffoldState: ScaffoldState
 ) {
-    var amout by rememberSaveable { mutableStateOf("") }
-    var note by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+    var amout by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
     val radioTransactionTypeOption = listOf(INCOME_DATA, EXPENSE_DATA)
     val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioTransactionTypeOption[0]) }
     val (selectionIncomeCategoryOption, onOptionIncomeCategorySelected) = remember {
@@ -96,8 +99,8 @@ fun AddTransaction(
         }
     val datePickerDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val date = remember { mutableStateOf("Today") }
-    val context = LocalContext.current
+    val date = remember { mutableStateOf(context.resources.getString(R.string.today)) }
+
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(modifier = Modifier.padding(8.dp).fillMaxWidth().wrapContentHeight()) {
@@ -113,8 +116,8 @@ fun AddTransaction(
             onChange = {
                 amout = it
             },
-            label = "Amount",
-            placeholder = "Enter Amount",
+            label = stringResource(R.string.amount),
+            placeholder = stringResource(R.string.enter_amount),
             leadingIconPainterResource = painterResource(R.drawable.ic_baseline_attach_money_24),
             isDarkTheme = isDarkTheme.value,
         )
@@ -124,8 +127,8 @@ fun AddTransaction(
             onChange = {
                 note = it
             },
-            label = "Note",
-            placeholder = "Enter Note",
+            label = stringResource(R.string.note),
+            placeholder = stringResource(R.string.enter_note),
             leadingIconImageVector = Icons.Outlined.Edit,
             isDarkTheme = isDarkTheme.value
         )
@@ -267,14 +270,26 @@ fun AddTransaction(
             onClick = {
                 when {
                     selectionIncomeCategoryOption.isEmpty() -> {
-                        Toast.makeText(context, "Please Select Category", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.please_select_category),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     amout.isEmpty() -> {
-                        Toast.makeText(context, "Enter Amount", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.enter_amount),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     note.isEmpty() -> {
-                        Toast.makeText(context, "Enter Note", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.resources.getString(R.string.enter_note),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     else -> {
                         val transactionDetailsModel = TransactionDetailsModel(
@@ -294,8 +309,20 @@ fun AddTransaction(
                                 } else {
                                     viewModel.getExpenseData()
                                 }
+                                scope.launch {
+                                    addTransactionSheetState.hide()
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        context.resources.getString(R.string.message_added)
+                                    )
+                                }
                             },
                             failureListener = {
+                                scope.launch {
+                                    addTransactionSheetState.hide()
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        context.resources.getString(R.string.message_failed)
+                                    )
+                                }
                             }
                         )
                     }
@@ -308,7 +335,7 @@ fun AddTransaction(
             ),
         ) {
             Text(
-                "Add Transaction",
+                stringResource(R.string.add_transaction),
                 style = MaterialTheme.typography.h2,
                 color = textNormalColor(isDarkTheme.value)
             )
@@ -317,17 +344,17 @@ fun AddTransaction(
     if (datePickerDialog.value) {
         AlertDialog(
             onDismissRequest = {
-                date.value = "Select Date"
+                date.value = context.resources.getString(R.string.select_date)
                 datePickerDialog.value = false
             },
             dismissButton = {
                 TextButton(
                     onClick = {
                         datePickerDialog.value = false
-                        date.value = "Select Date"
+                        date.value = context.resources.getString(R.string.select_date)
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
             confirmButton = {
@@ -336,12 +363,12 @@ fun AddTransaction(
                         datePickerDialog.value = false
                     }
                 ) {
-                    Text("Select")
+                    Text(stringResource(R.string.select))
                 }
             },
             title = {
                 Text(
-                    "Select Date",
+                    stringResource(R.string.select_date),
                     color = textNormalColor(isDarkTheme.value)
                 )
             },

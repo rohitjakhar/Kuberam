@@ -1,19 +1,25 @@
 package com.kuberam.android.utils
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import com.kuberam.android.ui.theme.backGroundDay
 import com.kuberam.android.ui.theme.backgroundNight
 import com.kuberam.android.ui.theme.cardBackgroundDay
 import com.kuberam.android.ui.theme.cardBackgroundNight
+import com.kuberam.android.ui.theme.chipDay
+import com.kuberam.android.ui.theme.chipNight
+import com.kuberam.android.ui.theme.focusTextBoxDay
+import com.kuberam.android.ui.theme.focusTextBoxNight
+import com.kuberam.android.ui.theme.textBoxBrushDay
+import com.kuberam.android.ui.theme.textBoxBrushNight
 import com.kuberam.android.ui.theme.textHeadingDay
 import com.kuberam.android.ui.theme.textHeadingNight
 import com.kuberam.android.ui.theme.textNormalDay
 import com.kuberam.android.ui.theme.textNormalNight
+import com.kuberam.android.ui.theme.unfocusedTextBoxDay
+import com.kuberam.android.ui.theme.unfocusedTextBoxNight
 
 @Composable
-fun ButtonBackground(isDarkTheme: Boolean) = if (isDarkTheme) {
+fun buttonBackground(isDarkTheme: Boolean) = if (isDarkTheme) {
     backgroundNight
 } else {
     backGroundDay
@@ -40,15 +46,10 @@ fun cardBackground(isDarkTheme: Boolean) = if (isDarkTheme) {
     cardBackgroundDay
 }
 
-@Composable
-fun StrokeColor(isDarkTheme: Boolean) = if (isDarkTheme) {
-} else {
-}
-
 fun chipColor(isDarkTheme: Boolean) = if (isDarkTheme) {
-    Color(0xff274661)
+    chipNight
 } else {
-    Color.DarkGray
+    chipDay
 }
 
 fun selectedChipColor(isDarkTheme: Boolean) = if (isDarkTheme) {
@@ -58,19 +59,19 @@ fun selectedChipColor(isDarkTheme: Boolean) = if (isDarkTheme) {
 }
 
 fun focusOutlineBorderColor(isDarkTheme: Boolean) = if (isDarkTheme) {
-    Color(0xfff4c057)
+    focusTextBoxNight
 } else {
-    Color(0xfffdc9e4)
+    focusTextBoxDay
 }
 
-fun unfocusOutlineBorderColor(isDarkTheme: Boolean) = if (isDarkTheme) {
-    Color(0xff2d4057)
+fun unfocusedOutlineBorderColor(isDarkTheme: Boolean) = if (isDarkTheme) {
+    unfocusedTextBoxNight
 } else {
-    Color(0xffabeacf)
+    unfocusedTextBoxDay
 }
 
 fun textBoxBrush(isDarkTheme: Boolean) = if (isDarkTheme) {
-    Brush.horizontalGradient(colors = listOf(Color(0xff5c38a9), Color(0xff174450)))
+    textBoxBrushNight
 } else {
-    Brush.horizontalGradient(colors = listOf(Color(0xff7ae87a), Color(0xff1ff2c8)))
+    textBoxBrushDay
 }

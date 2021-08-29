@@ -20,6 +20,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
@@ -31,8 +32,8 @@ import com.auth0.android.Auth0
 import com.kuberam.android.R
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
-import com.kuberam.android.utils.ButtonBackground
 import com.kuberam.android.utils.NetworkResponse
+import com.kuberam.android.utils.buttonBackground
 import com.kuberam.android.utils.cardBackground
 import com.kuberam.android.utils.textNormalColor
 
@@ -104,10 +105,10 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
                 shape = RoundedCornerShape(8.dp),
                 elevation = ButtonDefaults.elevation(defaultElevation = 16.dp),
                 contentPadding = PaddingValues(16.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = ButtonBackground(isDarkTheme.value))
+                colors = ButtonDefaults.buttonColors(backgroundColor = buttonBackground(isDarkTheme.value))
             ) {
                 Text(
-                    "Continue With Auth0",
+                    stringResource(R.string.continue_with_auth0),
                     style = MaterialTheme.typography.body1,
                     color = textNormalColor(isDarkTheme.value)
                 )

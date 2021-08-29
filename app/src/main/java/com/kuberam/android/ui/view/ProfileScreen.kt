@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -145,7 +146,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
             }
             Column(modifier = Modifier.fillMaxHeight()) {
                 TextBox(
-                    text = "About Us",
+                    text = stringResource(R.string.about_us),
                     clickListener = {
                         navController.navigate(Screen.AboutScreen.route)
                     },
@@ -154,7 +155,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     isDarkTheme = isDarkTheme.value
                 )
                 TextBox(
-                    text = "Term & Condition",
+                    text = stringResource(R.string.term_conditions),
                     clickListener = {
                         openInBrowser(
                             link = "https://sites.google.com/view/kuberam-privacy-policy",
@@ -166,9 +167,10 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     isDarkTheme = isDarkTheme.value
                 )
                 TextBox(
-                    text = "Write Review",
+                    text = stringResource(R.string.write_review_lbl),
                     clickListener = {
-                        val uri = Uri.parse("market://details?id=" + context.packageName)
+                        val uri =
+                            Uri.parse("https://play.google.com/store/apps/details?id=" + context.packageName)
                         val intent = Intent(Intent.ACTION_VIEW, uri)
                         request.addOnCompleteListener {
                             if (it.isSuccessful) {
@@ -200,7 +202,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     isDarkTheme = isDarkTheme.value
                 )
                 TextBox(
-                    text = "Feedback",
+                    text = stringResource(R.string.feedback),
                     clickListener = {
                         scope.launch {
                             if (feedbackModalSheet.isVisible) feedbackModalSheet.hide() else feedbackModalSheet.show()
@@ -211,7 +213,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     isDarkTheme = isDarkTheme.value
                 )
                 TextBox(
-                    text = "Share App",
+                    text = stringResource(R.string.share_app),
                     clickListener = {
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "text/plain"
@@ -226,17 +228,18 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     isDarkTheme = isDarkTheme.value
                 )
                 TextBox(
-                    text = "Logout",
+                    text = stringResource(R.string.logout),
                     backgroundColor = MaterialTheme.colors.error,
                     clickListener = {
                         viewModel.logoutUser(
                             auth0 = auth0,
                             context = context,
                             successListener = {
-                                navController.navigate(Screen.Login.route) {
+                                navController.navigate(Screen.SplashScreen.route) {
                                     popUpTo(Screen.Profile.route) {
                                         inclusive = true
                                     }
+                                    launchSingleTop = true
                                 }
                             },
                             failureListener = {}

@@ -21,12 +21,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kuberam.android.R
 import com.kuberam.android.component.MyOutLineTextField
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.cardBackground
@@ -41,19 +44,20 @@ fun FeedbackModalSheet(
     viewModel: MainViewModel,
     scaffoldState: ScaffoldState
 ) {
-    var feedbackText by rememberSaveable { mutableStateOf("") }
+    var feedbackText by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val isDarkTheme =
         produceState(initialValue = false, key1 = viewModel.darkTheme.value) {
             value = viewModel.darkTheme.value
         }
+    val context = LocalContext.current
     ModalBottomSheetLayout(
         sheetState = feedbackModalBottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetContent = {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    "Write Review",
+                    stringResource(R.string.write_review_lbl),
                     style = MaterialTheme.typography.h1,
                     color = textHeadingColor(isDarkTheme.value)
                 )
@@ -63,8 +67,8 @@ fun FeedbackModalSheet(
                     onChange = {
                         feedbackText = it
                     },
-                    label = "Review",
-                    placeholder = "Write Review...",
+                    label = stringResource(R.string.review),
+                    placeholder = stringResource(R.string.write_review),
                     leadingIconImageVector = Icons.Default.Edit,
                     isDarkTheme = isDarkTheme.value
                 )
@@ -80,7 +84,7 @@ fun FeedbackModalSheet(
                                     scope.launch {
                                         feedbackModalBottomSheetState.hide()
                                         scaffoldState.snackbarHostState.showSnackbar(
-                                            "Added",
+                                            context.resources.getString(R.string.message_added),
                                             duration = SnackbarDuration.Short
                                         )
                                     }
@@ -89,7 +93,7 @@ fun FeedbackModalSheet(
                                     scope.launch {
                                         feedbackModalBottomSheetState.hide()
                                         scaffoldState.snackbarHostState.showSnackbar(
-                                            "Failed",
+                                            context.resources.getString(R.string.message_failed),
                                             duration = SnackbarDuration.Short
                                         )
                                     }

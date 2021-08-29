@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
@@ -54,7 +55,11 @@ fun MyBottomBar(
                     }
                 }
             ) {
-                Icon(Icons.Filled.Menu, contentDescription = "menu")
+                if (drawerState.isOpen) {
+                    Icon(Icons.Filled.Close, contentDescription = "menu")
+                } else {
+                    Icon(Icons.Filled.Menu, contentDescription = "menu")
+                }
             }
         }
         Spacer(Modifier.weight(1f, true))

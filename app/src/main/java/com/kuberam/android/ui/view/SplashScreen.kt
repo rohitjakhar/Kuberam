@@ -48,9 +48,29 @@ fun SplashScreen(
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-                // handle after update
             } else {
-                // handle errors
+                if (isFirstTime) {
+                    viewModel.changeFirstTime()
+                    navController.navigate(Screen.OnBoardScreen.route)
+                } else {
+                    if (islogin) {
+                        if (isLockEnable) {
+                            bioMetricsPrompts(context, navController)
+                        } else {
+                            navController.navigate(Screen.DashboardScreen.route) {
+                                popUpTo(Screen.DashboardScreen.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    } else {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(Screen.Auth.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -97,8 +117,8 @@ fun SplashScreen(
                             }
                         }
                     } else {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Login.route) {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(Screen.Auth.route) {
                                 inclusive = true
                             }
                         }

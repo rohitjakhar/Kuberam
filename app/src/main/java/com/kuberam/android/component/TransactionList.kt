@@ -32,6 +32,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kuberam.android.R
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.Constant.INCOME_DATA
 import com.kuberam.android.utils.NetworkResponse
 
 @ExperimentalMaterialApi
@@ -72,6 +73,11 @@ fun TransactionList(viewModel: MainViewModel) {
                         if (it == DismissValue.DismissedToStart) {
                             viewModel.deleteTransaction(item)
                             viewModel.getAllTransaction()
+                            if (item.transactionType == INCOME_DATA) {
+                                viewModel.getIncomeData()
+                            } else {
+                                viewModel.getExpenseData()
+                            }
                         }
                         true
                     }

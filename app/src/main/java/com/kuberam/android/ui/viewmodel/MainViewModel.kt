@@ -42,7 +42,7 @@ class MainViewModel @Inject constructor(
         mutableStateOf(arrayListOf())
     val loginState: MutableState<NetworkResponse<String>> =
         mutableStateOf(NetworkResponse.Failure(""))
-    val firstTime: MutableState<Boolean> = mutableStateOf(false)
+    val firstTime: MutableState<Boolean> = mutableStateOf(true)
     val appLock: MutableState<Boolean> = mutableStateOf(false)
     val darkTheme: MutableState<Boolean> = mutableStateOf(false)
     val currency: MutableState<String> = mutableStateOf("INR")

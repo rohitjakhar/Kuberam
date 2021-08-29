@@ -36,7 +36,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -45,8 +44,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.kuberam.android.R
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.Constant.EXPENSE_DATA
@@ -67,7 +68,7 @@ fun AddCategoryBottomSheet(
     viewModel: MainViewModel,
     scaffoldState: ScaffoldState,
 ) {
-    var categoryName by rememberSaveable { mutableStateOf("") }
+    var categoryName by remember { mutableStateOf("") }
     val radioOption = listOf(INCOME_DATA, EXPENSE_DATA)
     val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioOption[0]) }
     val (selectedColor, onColorSelected) = remember { mutableStateOf(categoryColors[0]) }
@@ -88,7 +89,7 @@ fun AddCategoryBottomSheet(
             ) {
                 Spacer(Modifier.padding(top = 16.dp))
                 Text(
-                    text = "Add Category",
+                    text = stringResource(R.string.add_category),
                     style = MaterialTheme.typography.h1,
                     color = textHeadingColor(isDarkTheme.value)
                 )
@@ -99,8 +100,8 @@ fun AddCategoryBottomSheet(
                         categoryName = it
                     },
                     focusManager = focusManager,
-                    label = "Category",
-                    placeholder = "Add Category",
+                    label = stringResource(R.string.category),
+                    placeholder = stringResource(R.string.add_category),
                     leadingIconImageVector = Icons.Default.AddCircle
                 )
                 Spacer(Modifier.padding(top = 16.dp))
@@ -177,7 +178,11 @@ fun AddCategoryBottomSheet(
                 Button(
                     onClick = {
                         if (categoryName.isEmpty()) {
-                            Toast.makeText(context, "Enter Category Name", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                context.resources.getString(R.string.enter_category_name),
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                             return@Button
                         } else {
@@ -199,13 +204,17 @@ fun AddCategoryBottomSheet(
                                     }
                                     scope.launch {
                                         categoryAddSheet.hide()
-                                        scaffoldState.snackbarHostState.showSnackbar("Added")
+                                        scaffoldState.snackbarHostState.showSnackbar(
+                                            context.resources.getString(R.string.message_added)
+                                        )
                                     }
                                 },
                                 failureListener = {
                                     scope.launch {
                                         categoryAddSheet.hide()
-                                        scaffoldState.snackbarHostState.showSnackbar("Failed")
+                                        scaffoldState.snackbarHostState.showSnackbar(
+                                            context.getString(R.string.message_failed)
+                                        )
                                     }
                                 }
                             )
@@ -219,7 +228,7 @@ fun AddCategoryBottomSheet(
                     )
                 ) {
                     Text(
-                        "Add Category",
+                        stringResource(R.string.add_category),
                         style = MaterialTheme.typography.h2,
                         color = textNormalColor(isDarkTheme.value)
                     )

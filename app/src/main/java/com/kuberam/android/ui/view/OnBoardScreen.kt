@@ -43,12 +43,7 @@ fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
             Card(
                 Modifier
                     .graphicsLayer {
-                        // Calculate the absolute offset for the current page from the
-                        // scroll position. We use the absolute value which allows us to mirror
-                        // any effects for both directions
                         val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-
-                        // We animate the scaleX + scaleY, between 85% and 100%
                         lerp(
                             start = 0.55f,
                             stop = 1f,
@@ -57,8 +52,6 @@ fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
                             scaleX = scale
                             scaleY = scale
                         }
-
-                        // We animate the alpha, between 50% and 100%
                         alpha = lerp(
                             start = 0.5f,
                             stop = 1f,
@@ -67,16 +60,9 @@ fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
                     }
                     .fillMaxWidth()
 
-                // We animate the alpha, between 50% and 100%
-                /*alpha = lerp(
-                    start = 0.5f,
-                    stop = 1f,
-                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                )*/
-
             ) {
                 // Card content
-                OnBoardComponent(items[page], navController)
+                OnBoardComponent(items[page])
             }
         }
         OnBoardBottomSection(
@@ -91,7 +77,7 @@ fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
             if (state.currentPage + 1 == items.size) {
                 scope.launch {
                     viewModel.changeFirstTime()
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Auth.route)
                 }
             }
         }

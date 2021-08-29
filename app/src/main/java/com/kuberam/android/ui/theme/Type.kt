@@ -29,6 +29,16 @@ val Typography = Typography(
         fontFamily = Amiko,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp
+    ),
+    h3 = TextStyle(
+        fontFamily = Amiko,
+        fontWeight = FontWeight.Light,
+        fontSize = 16.sp
+    ),
+    h4 = TextStyle(
+        fontFamily = Amiko,
+        fontWeight = FontWeight.Light,
+        fontSize = 12.sp
     )
 
 /* Other default text styles to override

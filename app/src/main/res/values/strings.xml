@@ -9,10 +9,49 @@
     <string name="onboard_text2">Your Account is secure with Auth0</string>
     <string name="onboard_text3">Access your data at any time</string>
 
-    <string name="client_id">n1t1L4rqRSFnrnoYrnAEQhHg9svWCcqu</string>
-    <string name="domain">rohitjakhar.us.auth0.com</string>
+    <!--Add your app client id-->
+    <string name="client_id">replace with your client id</string>
+    <!--Add your domain-->
+    <string name="domain">replace with your domain</string>
 
     <string name="about_kuberam">Kuberam name is inspired from Hindu\'s God name "Kuber" which is known from money and wealth.\nIn Kuberam you can manage your all transaction witj Auth0 security.</string>
     <string name="about_developer">Rohit Jakhar is an Android Developer and passionate about technology.</string>
     <string name="about_auth0">Auth0 is an easy to implement, adaptable authentication and authorization platform</string>
+    <string name="select_currency">Select Currency</string>
+    <string name="add_category">Add Category</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="change_currency">Change Currency</string>
+    <string name="category">Category</string>
+    <string name="enter_category_name">Enter Category Name</string>
+    <string name="message_added">Added</string>
+    <string name="message_failed">Failed</string>
+    <string name="today">Today</string>
+    <string name="amount">Amount</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="note">Note</string>
+    <string name="enter_note">Enter Note</string>
+    <string name="please_select_category">Please Select Category</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="select_date">Select Date</string>
+    <string name="cancel">Cancel</string>
+    <string name="select">Select</string>
+    <string name="review">Review</string>
+    <string name="write_review">Write Review…</string>
+    <string name="write_review_lbl">Write Review</string>
+    <string name="recent_transaction">Recent Transaction</string>
+    <string name="see_all">See All</string>
+    <string name="about_developer_lbl">About Developer</string>
+    <string name="about_kuberam_lbl">About Kuberam</string>
+    <string name="continue_with_auth0">Continue With Auth0</string>
+    <string name="about_us">About Us</string>
+    <string name="term_conditions"><![CDATA[Term & Condition]]></string>
+    <string name="feedback">Feedback</string>
+    <string name="share_app">Share App</string>
+    <string name="logout">Logout</string>
+    <string name="about_auth0_lbl">About Auth0</string>
+    <string name="links">Links</string>
+    <string name="github">Github</string>
+    <string name="linkedin">LinkedIn</string>
+    <string name="hashnode">Hashnode</string>
+    <string name="playstore">Play Store</string>
 </resources>

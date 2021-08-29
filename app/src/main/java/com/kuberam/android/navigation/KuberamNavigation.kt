@@ -37,7 +37,7 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         navController = navController,
         startDestination = Screen.SplashScreen.route
     ) {
-        composable(Screen.Login.route) {
+        composable(Screen.Auth.route) {
             AuthScreen(navController, viewModel)
         }
         composable(

@@ -33,7 +33,8 @@ fun AddTransactionBottomSheet(
                 AddTransaction(
                     viewModel = viewModel,
                     categorySheetState = categoryModalBottomSheetState,
-                    addTransactionSheetState = addTransactionSheet
+                    addTransactionSheetState = addTransactionSheet,
+                    scaffoldState = scaffoldState
                 )
             }
         },

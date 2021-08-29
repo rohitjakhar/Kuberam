@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.kuberam.android.R
 import com.kuberam.android.utils.focusOutlineBorderColor
 import com.kuberam.android.utils.textNormalColor
-import com.kuberam.android.utils.unfocusOutlineBorderColor
+import com.kuberam.android.utils.unfocusedOutlineBorderColor
 
 @Composable
 fun MyOutLineTextField(
@@ -63,10 +63,10 @@ fun MyOutLineTextField(
             textColor = textNormalColor(
                 isDarkTheme
             ),
-            unfocusedBorderColor = unfocusOutlineBorderColor(isDarkTheme),
+            unfocusedBorderColor = unfocusedOutlineBorderColor(isDarkTheme),
             focusedBorderColor = focusOutlineBorderColor(isDarkTheme)
         ),
         shape = RoundedCornerShape(12.dp),
-        textStyle = MaterialTheme.typography.h2
+        textStyle = MaterialTheme.typography.h3
     )
 }

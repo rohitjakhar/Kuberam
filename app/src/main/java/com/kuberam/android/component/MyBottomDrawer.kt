@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,9 +41,12 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.kuberam.android.R
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.navigation.Screen
 import com.kuberam.android.ui.viewmodel.MainViewModel
+import com.kuberam.android.utils.Constant.EXPENSE_DATA
+import com.kuberam.android.utils.Constant.INCOME_DATA
 import com.kuberam.android.utils.currentList
 import com.kuberam.android.utils.textHeadingColor
 import com.kuberam.android.utils.textNormalColor
@@ -95,11 +99,10 @@ fun MyBottomDrawer(
                 Modifier
                     .fillMaxWidth().wrapContentHeight()
             ) {
-
                 viewModel.getCurrentCurrency()
                 Row(Modifier.fillMaxWidth().padding(16.dp)) {
                     Text(
-                        text = "Add Category",
+                        text = stringResource(R.string.add_category),
                         modifier = Modifier.clickable {
                             scope.launch {
                                 drawerState.close()
@@ -113,7 +116,7 @@ fun MyBottomDrawer(
                 Box(Modifier.fillMaxWidth().padding(16.dp)) {
                     Row {
                         Text(
-                            text = "Dark Theme",
+                            text = stringResource(R.string.dark_theme),
                             color = textNormalColor(isDarkTheme.value)
                         )
                     }
@@ -136,7 +139,7 @@ fun MyBottomDrawer(
                 ) {
                     Row {
                         Text(
-                            text = "Change Currency",
+                            text = stringResource(R.string.change_currency),
                             color = textNormalColor(isDarkTheme.value)
                         )
                     }
@@ -171,7 +174,7 @@ fun MyBottomDrawer(
                             },
                             title = {
                                 Text(
-                                    text = "Select Currency",
+                                    text = stringResource(R.string.select_currency),
                                     style = MaterialTheme.typography.h1,
                                     color = textHeadingColor(isDarkTheme.value)
                                 )
@@ -233,9 +236,9 @@ fun MyBottomDrawer(
                 pagerState,
             ) { page ->
                 if (page == 0) {
-                    SinglePieChart(incomeChartList, title = "Income")
+                    SinglePieChart(incomeChartList, title = INCOME_DATA)
                 } else {
-                    SinglePieChart(expenseChartList, "Expense")
+                    SinglePieChart(expenseChartList, EXPENSE_DATA)
                 }
             }
 
@@ -251,12 +254,12 @@ fun MyBottomDrawer(
                 modifier = Modifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp)
             ) {
                 Text(
-                    text = "Recent Transaction",
+                    text = stringResource(R.string.recent_transaction),
                     style = MaterialTheme.typography.body1,
                     color = textNormalColor(isDarkTheme.value)
                 )
                 Text(
-                    text = "See All",
+                    text = stringResource(R.string.see_all),
                     Modifier.clickable {
                         navController.navigate(Screen.TransactionsScreen.route)
                     },
