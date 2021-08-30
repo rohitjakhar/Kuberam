@@ -47,6 +47,12 @@ fun KuberamNavigation(viewModel: MainViewModel) {
                     initialOffsetX = { 600 },
                     animationSpec = tween(300)
                 ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = { _, _ ->
+                slideOutHorizontally(
+                    targetOffsetX = { 100 },
+                    animationSpec = tween(600)
+                ) + fadeOut(animationSpec = tween(300))
             }
         ) {
             ProfileScreen(navController, viewModel)
@@ -106,6 +112,13 @@ fun KuberamNavigation(viewModel: MainViewModel) {
                     targetOffsetX = { 100 },
                     animationSpec = tween(100)
                 ) + fadeOut(animationSpec = tween(600))
+            },
+            popEnterTransition = { _, _ ->
+                slideInHorizontally(
+                    initialOffsetX = { 100 },
+                    animationSpec = tween(600)
+                ) +
+                    fadeIn(animationSpec = tween(300))
             }
         ) {
             OnBoardScreen(navController, viewModel)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.background
@@ -25,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import com.kuberam.android.navigation.Screen
 import hu.ma.charts.legend.data.LegendEntry
@@ -113,7 +113,7 @@ fun openInBrowser(link: String, context: Context) {
     )
 }
 
-fun bioMetricsPrompts(fr: FragmentActivity, navController: NavController) {
+fun bioMetricsPrompts(fr: AppCompatActivity, navController: NavController) {
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle("Unlock")
         .setSubtitle("Use Finger")

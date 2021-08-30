@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.view.animation.OvershootInterpolator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -44,7 +44,7 @@ fun SplashScreen(
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
-    val context = LocalContext.current as FragmentActivity
+    val context = LocalContext.current
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
@@ -55,7 +55,10 @@ fun SplashScreen(
                 } else {
                     if (islogin) {
                         if (isLockEnable) {
-                            bioMetricsPrompts(context, navController)
+                            bioMetricsPrompts(
+                                context.applicationContext as AppCompatActivity,
+                                navController
+                            )
                         } else {
                             navController.navigate(Screen.DashboardScreen.route) {
                                 popUpTo(Screen.DashboardScreen.route) {
@@ -108,7 +111,7 @@ fun SplashScreen(
                 } else {
                     if (islogin) {
                         if (isLockEnable) {
-                            bioMetricsPrompts(context, navController)
+                            bioMetricsPrompts(context as AppCompatActivity, navController)
                         } else {
                             navController.navigate(Screen.DashboardScreen.route) {
                                 popUpTo(Screen.DashboardScreen.route) {
