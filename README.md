@@ -1,6 +1,6 @@
 ![](media/home_design.png)
 
-# **QuizZon**
+# **Kuberam**
 
 **Kuberam** is an app to manage your transactions.
 
@@ -10,22 +10,27 @@
 
 [![Kuberam](https://img.shields.io/badge/Kuberam✅-APK-red.svg?style=for-the-badge&logo=googleplay)](https://play.google.com/store/apps/details?id=com.kuberam.android)
 
+## Insights into the app 🔎
+### Dark Theme
+![](media/kuberam_dark_poster.png)
+
+### Light Theme
+![](media/kuberam_light_poster.png)
+
 ## Setup
 Clone the repository on your machine. Open the project on your IDE and connect it to firebase and Auth0 and everything will be setup
 
+- Instal Android Studio Arctic fox
 - Add your firebase json class in app directory
 - Change Client id, domain name and scheme in string resources file.
 
 ## About
 
- It uses firebase and Auth0 as it's backend. It uses Auth0 Authentication for auth, Firebase Crashlytics for crash reporting and Firestore as its database.
+It uses firebase and Auth0 as it's backend. It uses Auth0 Authentication for auth, Firebase Crashlytics for crash reporting and Firestore as its database.
 
 - Fully functionable.
 - Clean and Simple Material UI.
 
-### Insights into the app 🔎
-
-## Features
 
 ## Features:
 - **Auth0 Login** :- Auth0 is used for login/signup in app.
@@ -36,6 +41,7 @@ Clone the repository on your machine. Open the project on your IDE and connect i
 
 - **Add Transaction** :- Using simple step you can add your transaction.
 
+pcm
 - **Create Category** :- As we know everyone's transaction category so in Kuberam app you can create category as your need.
 
 - **Pie Chart** :- Based on your income and expense transaction we show Pie Chart of Income Transaction and Expense Transaction so your can manage them.
@@ -47,18 +53,18 @@ Clone the repository on your machine. Open the project on your IDE and connect i
 - **Delete Transaction** :- If you add transaction by mistakes or you don't want to track that transactions so we provide delete features also. For deleting transaction you need to swipe transaction from Left to End.
 
 - ** In App Review** :- In App Review Library.
-- ** In App Update** :- In this busy world we always forget about updating app when app have an updates, In Kuberam we use In App Update library so when app have any update it show an popup for update and you can update directly from that without opening playstore.
+- **In App Update** :- In this busy world we always forget about updating app when app have an updates, In Kuberam we use In App Update library so when app have any update it show an popup for update and you can update directly from that without opening playstore.
 
-- ** Reminder Notification** :- We send an notification everyday for reminding to add transaction in app so you don't skip any day to add transactions.
+- **Reminder Notification** :- We send an notification everyday for reminding to add transaction in app so you don't skip any day to add transactions.
 
 ## 📸 Screenshots
 
 ||||
 |:----------------------------------------:|:-----------------------------------------:|:-----------------------------------------: |
-| ![](media/light_login/1.png) | ![](media/light_dashboard.png) | ![](media/light_bottom_drawer.png) |
+| ![](media/light_login.png) | ![](media/light_dashboard.png) | ![](media/light_bottom_drawer.png) |
 | ![](media/light_add_category.png)  | ![](media/light_add_transaction.png) | ![](media/light_profile.png)    |
 | ![](media/dark_login.png) | ![](media/dark_dashboard_data.png)    | ![](media/dark_drawer.png)      |
-|![](media/dark_category.png)  |![](media/dark_add_transaction.png)  |![](media/dark_profile)      |
+|![](media/dark_category.png)  |![](media/dark_add_transaction.png)  |![](media/dark_profile.png)      |
 
 ## Built With 🛠
 - [Auth0](https://auth0.com/) -  Auth0 is an easy to implement, adaptable authentication and authorization platform.
@@ -133,7 +139,7 @@ Clone the repository on your machine. Open the project on your IDE and connect i
 ## Architecture
 This app uses [***MVVM (Model View View-Model)***](https://developer.android.com/jetpack/docs/guide#recommended-app-arch) architecture.
 
-![](https://developer.android.com/topic/libraries/architecture/images/final-architecture.png)
+![](media/mvvm.png)
 
 ## Contribute 🤝
 
@@ -141,11 +147,8 @@ If you want to contribute to this library, you're always welcome!
 
 ## Contact 📩
 
-Have an project? DM us at 👇<br>
-[![Mail](https://img.shields.io/badge/Gmail-green.svg?style=for-the-badge&logo=gmail)](mailto://rohitjakhar940@gmail.com)
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-red.svg?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/rohitjakhar0/)
-
+Have an project? DM us at [![Mail](https://img.shields.io/badge/Gmail-green.svg?style=for-the-badge&logo=gmail)](mailto://rohitjakhar940@gmail.com)
+Connect with me at LinkedIn [![LinkedIn](https://img.shields.io/badge/LinkedIn-red.svg?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/rohitjakhar0/)
 
 ## Donation 💰
 
