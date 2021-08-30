@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +56,7 @@ fun CustomTopSection(
     Surface(
         color = cardBackground(isDarkTheme.value),
         modifier = Modifier.wrapContentHeight().fillMaxWidth()
-            .padding(bottom = 16.dp),
+            .padding(bottom = 8.dp),
         shape = RoundedCornerShape(16.dp).copy(
             topStart = ZeroCornerSize,
             topEnd = ZeroCornerSize
@@ -63,8 +64,8 @@ fun CustomTopSection(
     ) {
         Column(
             Modifier.padding(
-                bottom = 16.dp,
-                top = 16.dp,
+                bottom = 8.dp,
+                top = 8.dp,
                 start = 16.dp,
                 end = 16.dp
             ).fillMaxWidth()
@@ -94,14 +95,14 @@ fun CustomTopSection(
 
                 Text(
                     "Income: ${userProfile.value.totalIncome}${currentCurrency.value}",
-                    style = Typography.h2,
+                    style = MaterialTheme.typography.h2,
                     modifier = Modifier.padding(8.dp),
                     color = textNormalColor(isDarkTheme.value)
                 )
 
                 Text(
                     "Expense: ${userProfile.value.totalExpense}${currentCurrency.value}",
-                    style = Typography.h2,
+                    style = MaterialTheme.typography.h2,
                     modifier = Modifier.padding(8.dp),
                     color = textNormalColor(isDarkTheme.value)
                 )

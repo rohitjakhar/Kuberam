@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -38,101 +39,106 @@ fun AboutScreen(viewModel: MainViewModel) {
         }
     val versioncode = context.packageManager.getPackageInfo(context.packageName, 0).versionName
 
-    Column {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.h1,
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Text(text = "Version: $versioncode")
-                Spacer(Modifier.padding(top = 16.dp))
-                Text(
-                    stringResource(R.string.about_developer_lbl),
-                    style = MaterialTheme.typography.h2,
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 8.dp))
-                Text(
-                    stringResource(R.string.about_developer),
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 16.dp))
-                Text(
-                    stringResource(R.string.about_kuberam_lbl),
-                    style = MaterialTheme.typography.h2,
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 8.dp))
-                Text(
-                    stringResource(R.string.about_kuberam),
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 16.dp))
-                Text(
-                    stringResource(R.string.about_auth0_lbl),
-                    style = MaterialTheme.typography.h2,
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 8.dp))
-                Text(
-                    stringResource(R.string.about_auth0),
-                    color = textNormalColor(isDarkTheme.value)
-                )
-                Spacer(Modifier.padding(top = 16.dp))
+    LazyColumn {
+        item {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(8.dp)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.h1,
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Text(text = "Version: $versioncode")
+                    Spacer(Modifier.padding(top = 16.dp))
+                    Text(
+                        stringResource(R.string.about_developer_lbl),
+                        style = MaterialTheme.typography.h2,
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 8.dp))
+                    Text(
+                        stringResource(R.string.about_developer),
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 16.dp))
+                    Text(
+                        stringResource(R.string.about_kuberam_lbl),
+                        style = MaterialTheme.typography.h2,
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 8.dp))
+                    Text(
+                        stringResource(R.string.about_kuberam),
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 16.dp))
+                    Text(
+                        stringResource(R.string.about_auth0_lbl),
+                        style = MaterialTheme.typography.h2,
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 8.dp))
+                    Text(
+                        stringResource(R.string.about_auth0),
+                        color = textNormalColor(isDarkTheme.value)
+                    )
+                    Spacer(Modifier.padding(top = 16.dp))
+                }
             }
         }
-        Column(
-            modifier = Modifier.clip(RoundedCornerShape(topEnd = 26.dp, topStart = 26.dp))
-                .fillMaxHeight().padding(top = 1.dp)
-                .background(chipColor(isDarkTheme.value)),
-        ) {
-            Text(
-                text = stringResource(R.string.links),
-                style = MaterialTheme.typography.h1,
-                color = textNormalColor(!isDarkTheme.value),
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-            TextBox(
-                text = stringResource(R.string.github),
-                clickListener = {
-                    openInBrowser(link = GITHUB_LINK, context = context)
-                },
-                backgroundColor = cardBackground(isDarkTheme.value),
-                textColor = textNormalColor(isDarkTheme.value),
-                isDarkTheme = isDarkTheme.value
-            )
-            TextBox(
-                text = stringResource(R.string.linkedin),
-                clickListener = {
-                    openInBrowser(link = LINKEDIN_LINK, context = context)
-                },
-                backgroundColor = cardBackground(isDarkTheme.value),
-                textColor = textNormalColor(isDarkTheme.value),
-                isDarkTheme = isDarkTheme.value
-            )
-            TextBox(
-                text = stringResource(R.string.hashnode),
-                clickListener = {
-                    openInBrowser(link = HASHNODE_LINK, context = context)
-                },
-                backgroundColor = cardBackground(isDarkTheme.value),
-                textColor = textNormalColor(isDarkTheme.value),
-                isDarkTheme = isDarkTheme.value,
-            )
-            TextBox(
-                text = stringResource(R.string.playstore),
-                clickListener = {
-                    openInBrowser(link = PLAY_STORE_LINK, context = context)
-                },
-                backgroundColor = cardBackground(isDarkTheme.value),
-                textColor = textNormalColor(isDarkTheme.value),
-                isDarkTheme = isDarkTheme.value
-            )
+        item {
+
+            Column(
+                modifier = Modifier.clip(RoundedCornerShape(topEnd = 26.dp, topStart = 26.dp))
+                    .fillMaxHeight().padding(top = 1.dp)
+                    .background(chipColor(isDarkTheme.value)),
+            ) {
+                Text(
+                    text = stringResource(R.string.links),
+                    style = MaterialTheme.typography.h1,
+                    color = textNormalColor(!isDarkTheme.value),
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                )
+                TextBox(
+                    text = stringResource(R.string.github),
+                    clickListener = {
+                        openInBrowser(link = GITHUB_LINK, context = context)
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
+                )
+                TextBox(
+                    text = stringResource(R.string.linkedin),
+                    clickListener = {
+                        openInBrowser(link = LINKEDIN_LINK, context = context)
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
+                )
+                TextBox(
+                    text = stringResource(R.string.hashnode),
+                    clickListener = {
+                        openInBrowser(link = HASHNODE_LINK, context = context)
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value,
+                )
+                TextBox(
+                    text = stringResource(R.string.playstore),
+                    clickListener = {
+                        openInBrowser(link = PLAY_STORE_LINK, context = context)
+                    },
+                    backgroundColor = cardBackground(isDarkTheme.value),
+                    textColor = textNormalColor(isDarkTheme.value),
+                    isDarkTheme = isDarkTheme.value
+                )
+            }
         }
     }
 }

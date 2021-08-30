@@ -10,9 +10,9 @@
     <string name="onboard_text3">Access your data at any time</string>
 
     <!--Add your app client id-->
-    <string name="client_id">replace with your client id</string>
+    <string name="client_id">replace with your auth0 client id</string>
     <!--Add your domain-->
-    <string name="domain">replace with your domain</string>
+    <string name="domain">replace with you auth0 domain</string>
 
     <string name="about_kuberam">Kuberam name is inspired from Hindu\'s God name "Kuber" which is known from money and wealth.\nIn Kuberam you can manage your all transaction witj Auth0 security.</string>
     <string name="about_developer">Rohit Jakhar is an Android Developer and passionate about technology.</string>

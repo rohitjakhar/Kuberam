@@ -19,6 +19,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kuberam.android.R
 import com.kuberam.android.utils.CustomVerticalLegend
+import hu.ma.charts.legend.data.LegendPosition
 import hu.ma.charts.pie.PieChart
 import hu.ma.charts.pie.data.PieChartData
 import hu.ma.charts.pie.data.PieChartEntry
@@ -31,7 +32,7 @@ fun SinglePieChart(pieChartData: List<PieChartEntry>, title: String) {
     ChartContainer(
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp)
+            .height(200.dp)
             .padding(horizontal = 16.dp)
             .border(
                 BorderStroke(1.dp, MaterialTheme.colors.secondaryVariant),
@@ -52,7 +53,9 @@ fun SinglePieChart(pieChartData: List<PieChartEntry>, title: String) {
         } else {
             PieChart(
                 data = PieChartData(
-                    entries = pieChartData
+                    entries = pieChartData,
+                    legendPosition = LegendPosition.Start,
+
                 ),
                 legend = { entries ->
                     CustomVerticalLegend(entries = entries)

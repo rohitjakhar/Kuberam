@@ -211,7 +211,7 @@ fun MyBottomDrawer(
     ) {
         Column {
             CustomTopSection(viewModel)
-            Spacer(Modifier.padding(top = 16.dp))
+            Spacer(Modifier.padding(top = 8.dp))
             val incomeChartList = arrayListOf<PieChartEntry>()
             val expenseChartList = arrayListOf<PieChartEntry>()
             incomeCategoryState.value.forEach {
@@ -248,7 +248,7 @@ fun MyBottomDrawer(
                     Alignment.CenterHorizontally
                 ).padding(16.dp),
             )
-            Spacer(Modifier.padding(top = 16.dp))
+            Spacer(Modifier.padding(top = 8.dp))
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp)
@@ -267,7 +267,6 @@ fun MyBottomDrawer(
                     color = textNormalColor(isDarkTheme.value)
                 )
             }
-
             TransactionList(viewModel)
         }
     }

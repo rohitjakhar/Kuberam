@@ -275,7 +275,7 @@ class MainViewModel @Inject constructor(
                 authRepo.loadProfile(
                     it.accessToken,
                     auth0,
-                    successListener = {
+                    successListener = { it ->
                         val profileModel = ProfileDataModel(
                             name = it.name ?: "",
                             email = it.email ?: "",

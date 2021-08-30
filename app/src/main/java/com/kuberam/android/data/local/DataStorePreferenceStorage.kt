@@ -48,7 +48,7 @@ class DataStorePreferenceStorage @Inject constructor(
 
     override val isDarkTheme: Flow<Boolean>
         get() = dataStore.data.map {
-            it[PREF_DARK_THEME] ?: false
+            it[PREF_DARK_THEME] ?: true
         }
 
     override val userProfileData: Flow<ProfileDataModel>

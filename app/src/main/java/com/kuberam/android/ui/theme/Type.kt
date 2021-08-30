@@ -23,12 +23,12 @@ val Typography = Typography(
     h1 = TextStyle(
         fontFamily = Amiko,
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp
+        fontSize = 24.sp
     ),
     h2 = TextStyle(
         fontFamily = Amiko,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp
+        fontSize = 18.sp
     ),
     h3 = TextStyle(
         fontFamily = Amiko,

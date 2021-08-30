@@ -1,5 +1,6 @@
 package com.kuberam.android.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,6 +59,7 @@ fun AuthScreen(navController: NavController, viewModel: MainViewModel) {
     LaunchedEffect(key1 = viewModel.loginState.value) {
         when (viewModel.loginState.value) {
             is NetworkResponse.Success -> {
+                Log.d("testo0", " is success")
                 isLoading.value = false
                 navController.navigate(Screen.DashboardScreen.route)
             }

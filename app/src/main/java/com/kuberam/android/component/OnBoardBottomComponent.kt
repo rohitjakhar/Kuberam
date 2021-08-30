@@ -40,13 +40,13 @@ fun OnBoardBottomSection(
                     Text("Start")
                 }
             )
+        } else {
+            HorizontalPagerIndicator(
+                pagerState = state,
+                modifier = Modifier.align(Alignment.Center),
+                indicatorHeight = 10.dp,
+                indicatorWidth = 28.dp
+            )
         }
-
-        HorizontalPagerIndicator(
-            pagerState = state,
-            modifier = Modifier.align(Alignment.Center),
-            indicatorHeight = 10.dp,
-            indicatorWidth = 28.dp
-        )
     }
 }
