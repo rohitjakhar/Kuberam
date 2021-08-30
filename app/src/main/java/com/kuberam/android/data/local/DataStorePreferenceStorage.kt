@@ -32,7 +32,7 @@ class DataStorePreferenceStorage @Inject constructor(
             it[PREF_IS_LOGIN] ?: false
         }
 
-    override val currenetCurrency: Flow<String>
+    override val currentCurrency: Flow<String>
         get() = dataStore.data.map {
             it[PREF_CURRENCY] ?: "INR"
         }
@@ -61,9 +61,9 @@ class DataStorePreferenceStorage @Inject constructor(
             )
         }
 
-    override suspend fun changeCurrency(curreny: String) {
+    override suspend fun changeCurrency(currency: String) {
         dataStore.edit {
-            it[PREF_CURRENCY] = curreny
+            it[PREF_CURRENCY] = currency
         }
     }
 

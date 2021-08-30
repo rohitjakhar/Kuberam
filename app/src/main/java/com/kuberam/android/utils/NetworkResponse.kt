@@ -6,5 +6,5 @@ sealed class NetworkResponse<T>(
 ) {
     class Success<T>(data: T?) : NetworkResponse<T>(data = data)
     class Failure<T>(message: String) : NetworkResponse<T>(message = message)
-    class Loading<T>() : NetworkResponse<T>()
+    class Loading<T> : NetworkResponse<T>()
 }

@@ -107,7 +107,7 @@ fun TransactionList(viewModel: MainViewModel) {
                         }
                     },
                     dismissContent = {
-                        TransactionComponenet(item, viewModel)
+                        TransactionComponent(item, viewModel)
                     },
                     directions = setOf(
                         DismissDirection.EndToStart

@@ -177,9 +177,8 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         if (it.isSuccessful) {
                             val reviewInfo = it.result
                             val flow = manager.launchReviewFlow(context as Activity, reviewInfo)
-                            flow.addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                } else {
+                            flow.addOnCompleteListener { task ->
+                                if (!task.isSuccessful) {
                                     try {
                                         context.startActivity(intent)
                                     } catch (activityNotFound: ActivityNotFoundException) {

@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun TransactionComponenet(
+fun TransactionComponent(
     transactionDetailsModel: TransactionDetailsModel,
     viewModel: MainViewModel
 ) {

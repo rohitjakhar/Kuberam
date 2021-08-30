@@ -11,14 +11,14 @@ interface PreferenceDataStore {
     val userProfileData: Flow<ProfileDataModel>
     val isLockEnable: Flow<Boolean>
     val isDarkTheme: Flow<Boolean>
-    val currenetCurrency: Flow<String>
+    val currentCurrency: Flow<String>
 
     suspend fun isLogin(isLogin: Boolean)
     suspend fun isLockEnable(isLockEnable: Boolean)
     suspend fun darkTheme(isDarkTheme: Boolean)
     suspend fun firstTime(isFirstTime: Boolean)
     suspend fun saveProfile(userProfileData: ProfileDataModel)
-    suspend fun changeCurrency(curreny: String)
+    suspend fun changeCurrency(currency: String)
     suspend fun clearData()
 
     object PreferenceKey {

@@ -2,13 +2,14 @@ package com.kuberam.android.navigation
 
 import android.annotation.SuppressLint
 
-sealed class Screen(val route: String, val resourceId: String) {
-    object DashboardScreen : Screen("nav_dashboard", "Home")
-    object Auth : Screen("nav_login", "Login")
-    object Profile : Screen("nav_profile", "Profile")
+sealed class Screen(val route: String) {
+    object DashboardScreen : Screen("nav_dashboard")
+    object Auth : Screen("nav_login")
+    object Profile : Screen("nav_profile")
+
     @SuppressLint("CustomSplashScreen")
-    object SplashScreen : Screen("nav_splash_screen", "Splash Screen")
-    object OnBoardScreen : Screen("nav_on_board_screen", "Splash Screen")
-    object TransactionsScreen : Screen("nav_transaction_list", "All Transaction")
-    object AboutScreen : Screen("nav_about", "All Transaction")
+    object SplashScreen : Screen("nav_splash_screen")
+    object OnBoardScreen : Screen("nav_on_board_screen")
+    object TransactionsScreen : Screen("nav_transaction_list")
+    object AboutScreen : Screen("nav_about")
 }

@@ -62,7 +62,7 @@ fun MyBottomDrawer(
     drawerState: BottomDrawerState,
     viewModel: MainViewModel,
     categoryAddSheet: ModalBottomSheetState,
-    innerPaddding: PaddingValues,
+    innerPadding: PaddingValues,
     navController: NavController
 ) {
     val lockCheckState = remember { mutableStateOf(true) }
@@ -206,7 +206,7 @@ fun MyBottomDrawer(
                 Divider(color = Color.LightGray)
             }
         },
-        modifier = Modifier.padding(innerPaddding),
+        modifier = Modifier.padding(innerPadding),
         gesturesEnabled = false
     ) {
         Column {

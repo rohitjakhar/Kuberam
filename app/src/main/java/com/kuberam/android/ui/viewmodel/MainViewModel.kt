@@ -62,7 +62,7 @@ class MainViewModel @Inject constructor(
     fun getCurrentCurrency() {
         viewModelScope.launch(IO) {
             currency.value =
-                Currency.getInstance(dataStorePreferenceStorage.currenetCurrency.first()).symbol
+                Currency.getInstance(dataStorePreferenceStorage.currentCurrency.first()).symbol
         }
     }
 
@@ -109,13 +109,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveProfile(userProfileData: ProfileDataModel) {
+    private fun saveProfile(userProfileData: ProfileDataModel) {
         viewModelScope.launch(IO) {
             dataStorePreferenceStorage.saveProfile(userProfileData)
         }
     }
 
-    fun changeLogin(isLogin: Boolean) {
+    private fun changeLogin(isLogin: Boolean) {
         viewModelScope.launch(IO) {
             dataStorePreferenceStorage.isLogin(isLogin)
         }
@@ -245,10 +245,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun updateTotalIncomeDate(incomeAmout: Long) {
+    private fun updateTotalIncomeDate(incomeAmmout: Long) {
         viewModelScope.launch(IO) {
             remoteDataSource.updateTotalIncomeData(
-                incomeAmount = incomeAmout,
+                incomeAmount = incomeAmmout,
                 successListener = {},
                 failureListener = {}
             )
@@ -265,7 +265,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun loginuser(
+    fun loginUser(
         context: Context,
         auth0: Auth0,
     ) {
@@ -275,12 +275,12 @@ class MainViewModel @Inject constructor(
                 authRepo.loadProfile(
                     it.accessToken,
                     auth0,
-                    successListener = { it ->
+                    successListener = { user ->
                         val profileModel = ProfileDataModel(
-                            name = it.name ?: "",
-                            email = it.email ?: "",
-                            profileUrl = it.pictureURL ?: "",
-                            userId = it.getId() ?: "",
+                            name = user.name ?: "",
+                            email = user.email ?: "",
+                            profileUrl = user.pictureURL ?: "",
+                            userId = user.getId() ?: "",
                         )
                         viewModelScope.launch(IO) {
                             authRepo.addUserToFirebase(
@@ -293,17 +293,17 @@ class MainViewModel @Inject constructor(
                                     )
                                     loginState.value = NetworkResponse.Success("Success")
                                 },
-                                failureListener = {
+                                failureListener = { expenseData ->
                                     loginState.value = NetworkResponse.Failure(
-                                        it.localizedMessage ?: "Unknown Error"
+                                        expenseData.localizedMessage ?: "Unknown Error"
                                     )
                                 }
                             )
                         }
                     },
-                    failureListener = {
+                    failureListener = { expenseData ->
                         loginState.value =
-                            NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+                            NetworkResponse.Failure(expenseData.localizedMessage ?: "Unknown Error")
                     }
                 )
             },

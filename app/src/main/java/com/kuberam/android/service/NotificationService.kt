@@ -42,7 +42,7 @@ class NotificationService : FirebaseMessagingService() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notifictionBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_name)
             .setStyle(NotificationCompat.BigTextStyle())
             .setContentTitle(p0.notification?.title ?: "Add Transaction Time")
@@ -60,6 +60,6 @@ class NotificationService : FirebaseMessagingService() {
             )
             notificationManager.createNotificationChannel(channel)
         }
-        notificationManager.notify(NOTIFICATION_ID, notifictionBuilder.build())
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 }

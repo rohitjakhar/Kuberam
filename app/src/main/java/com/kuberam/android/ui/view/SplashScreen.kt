@@ -38,7 +38,7 @@ fun SplashScreen(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    val islogin by viewModel.isLogin
+    val isLogin by viewModel.isLogin
     val isLockEnable by viewModel.appLock
     val isFirstTime by viewModel.firstTime
     val scale = remember {
@@ -47,13 +47,12 @@ fun SplashScreen(
     val context = LocalContext.current
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-            } else {
+            if (it.resultCode != RESULT_OK) {
                 if (isFirstTime) {
                     viewModel.changeFirstTime()
                     navController.navigate(Screen.OnBoardScreen.route)
                 } else {
-                    if (islogin) {
+                    if (isLogin) {
                         if (isLockEnable) {
                             bioMetricsPrompts(
                                 context.applicationContext as AppCompatActivity,
@@ -109,7 +108,7 @@ fun SplashScreen(
                     viewModel.changeFirstTime()
                     navController.navigate(Screen.OnBoardScreen.route)
                 } else {
-                    if (islogin) {
+                    if (isLogin) {
                         if (isLockEnable) {
                             bioMetricsPrompts(context as AppCompatActivity, navController)
                         } else {

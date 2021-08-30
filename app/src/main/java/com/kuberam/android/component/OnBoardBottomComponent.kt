@@ -34,7 +34,7 @@ fun OnBoardBottomSection(
                 modifier = Modifier.align(Alignment.CenterEnd).padding(bottom = 8.dp, end = 8.dp),
                 backgroundColor = cardBackground(isDarkThem),
                 icon = {
-                    Icon(Icons.Outlined.Done, contentDescription = "nextimage")
+                    Icon(Icons.Outlined.Done, contentDescription = "next image")
                 },
                 text = {
                     Text("Start")

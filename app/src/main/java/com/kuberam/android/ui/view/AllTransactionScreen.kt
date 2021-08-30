@@ -21,22 +21,18 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kuberam.android.R
-import com.kuberam.android.component.TransactionComponenet
+import com.kuberam.android.component.TransactionComponent
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.ui.viewmodel.MainViewModel
 import com.kuberam.android.utils.NetworkResponse
@@ -44,12 +40,11 @@ import com.kuberam.android.utils.textNormalColor
 
 @ExperimentalMaterialApi
 @Composable
-fun AllTransactionScreen(viewModel: MainViewModel, navController: NavController) {
+fun AllTransactionScreen(viewModel: MainViewModel) {
     val isDarkTheme =
         produceState(initialValue = false, key1 = viewModel.darkTheme.value) {
             value = viewModel.darkTheme.value
         }
-    var expended by remember { mutableStateOf(false) }
     val transactionListState = produceState(
         initialValue = emptyList<TransactionDetailsModel>(),
         key1 = viewModel.allTransaction.value
@@ -126,7 +121,7 @@ fun AllTransactionScreen(viewModel: MainViewModel, navController: NavController)
                             }
                         },
                         dismissContent = {
-                            TransactionComponenet(item, viewModel)
+                            TransactionComponent(item, viewModel)
                         },
                         directions = setOf(
                             DismissDirection.EndToStart,

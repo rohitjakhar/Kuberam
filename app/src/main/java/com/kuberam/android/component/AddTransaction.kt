@@ -76,7 +76,7 @@ fun AddTransaction(
     scaffoldState: ScaffoldState
 ) {
     val context = LocalContext.current
-    var amout by remember { mutableStateOf("") }
+    var ammout by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     val radioTransactionTypeOption = listOf(INCOME_DATA, EXPENSE_DATA)
     val (selectionOption, onOptionSelected) = remember { mutableStateOf(radioTransactionTypeOption[0]) }
@@ -112,9 +112,9 @@ fun AddTransaction(
         )
         Spacer(Modifier.padding(top = 16.dp))
         MyOutLineTextField(
-            value = amout,
+            value = ammout,
             onChange = {
-                amout = it
+                ammout = it
             },
             label = stringResource(R.string.amount),
             placeholder = stringResource(R.string.enter_amount),
@@ -276,7 +276,7 @@ fun AddTransaction(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    amout.isEmpty() -> {
+                    ammout.isEmpty() -> {
                         Toast.makeText(
                             context,
                             context.resources.getString(R.string.enter_amount),
@@ -295,7 +295,7 @@ fun AddTransaction(
                         val transactionDetailsModel = TransactionDetailsModel(
                             transactionId = System.currentTimeMillis().toString(),
                             transactionType = selectionOption,
-                            transactionAmount = amout,
+                            transactionAmount = ammout,
                             transactionCategory = selectionIncomeCategoryOption,
                             transactionTitle = note,
                             transactionDate = Calendar.getInstance().time

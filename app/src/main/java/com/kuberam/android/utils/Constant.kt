@@ -4,7 +4,6 @@ object Constant {
     const val USER_COLLECTION = "user"
     const val FEEDBACK_COLLECTION = "Feedback"
     const val TRANSACTION_COLLECTION = "transactionCollection"
-    const val CATEGORY_COLLECTION = "categoryCollection"
     const val INCOME_DATA = "Income"
     const val EXPENSE_DATA = "Expense"
     const val GITHUB_LINK = "https://github.com/rohitjakhar"
