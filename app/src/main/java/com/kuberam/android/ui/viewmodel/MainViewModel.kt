@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.auth0.android.Auth0
+import com.auth0.android.result.UserProfile
 import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.data.model.ProfileDataModel
@@ -21,7 +22,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Currency
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,222 +48,173 @@ class MainViewModel @Inject constructor(
     val darkTheme: MutableState<Boolean> = mutableStateOf(false)
     val currency: MutableState<String> = mutableStateOf("INR")
 
-    fun firstTime() {
-        viewModelScope.launch(IO) {
-            firstTime.value = dataStorePreferenceStorage.isFirstTime.first()
-        }
+    fun firstTime() = viewModelScope.launch(IO) {
+        firstTime.value = dataStorePreferenceStorage.isFirstTime.first()
     }
 
-    fun changeCurrency(currency: String) {
-        viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.changeCurrency(currency)
-        }
+    fun changeCurrency(currency: String) = viewModelScope.launch(IO) {
+        dataStorePreferenceStorage.changeCurrency(currency)
     }
 
-    fun getCurrentCurrency() {
-        viewModelScope.launch(IO) {
-            currency.value =
-                Currency.getInstance(dataStorePreferenceStorage.currentCurrency.first()).symbol
-        }
+    fun getCurrentCurrency() = viewModelScope.launch(IO) {
+        currency.value =
+            Currency.getInstance(dataStorePreferenceStorage.currentCurrency.first()).symbol
     }
 
-    fun changeFirstTime() {
-        viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.firstTime(false)
-        }
+    fun changeFirstTime() = viewModelScope.launch(IO) {
+        dataStorePreferenceStorage.firstTime(false)
     }
 
-    fun checkAppLock() {
-        viewModelScope.launch(IO) {
-            appLock.value = dataStorePreferenceStorage.isLockEnable.first()
-        }
+    fun checkAppLock() = viewModelScope.launch(IO) {
+        appLock.value = dataStorePreferenceStorage.isLockEnable.first()
     }
 
-    fun changeAppLock(isLockEnable: Boolean) {
-        viewModelScope.launch {
-            dataStorePreferenceStorage.isLockEnable(isLockEnable)
-        }
+    fun changeAppLock(isLockEnable: Boolean) = viewModelScope.launch {
+        dataStorePreferenceStorage.isLockEnable(isLockEnable)
     }
 
-    fun checkTheme() {
-        viewModelScope.launch(IO) {
-            darkTheme.value = dataStorePreferenceStorage.isDarkTheme.first()
-        }
+    fun checkTheme() = viewModelScope.launch(IO) {
+        darkTheme.value = dataStorePreferenceStorage.isDarkTheme.first()
     }
 
-    fun changeTheme(isDarkTheme: Boolean) {
-        viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.darkTheme(isDarkTheme)
-            darkTheme.value = isDarkTheme
-        }
+    fun changeTheme(isDarkTheme: Boolean) = viewModelScope.launch(IO) {
+        dataStorePreferenceStorage.darkTheme(isDarkTheme)
+        darkTheme.value = isDarkTheme
     }
 
-    fun checkLogin() {
-        viewModelScope.launch(IO) {
-            try {
+    fun checkLogin() = viewModelScope.launch(IO) {
+        try {
+            isLogin.value = dataStorePreferenceStorage.isLogin.first()
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
                 isLogin.value = dataStorePreferenceStorage.isLogin.first()
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    isLogin.value = dataStorePreferenceStorage.isLogin.first()
-                }
             }
         }
     }
 
-    private fun saveProfile(userProfileData: ProfileDataModel) {
-        viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.saveProfile(userProfileData)
-        }
+    private fun saveProfile(userProfileData: ProfileDataModel) = viewModelScope.launch(IO) {
+        dataStorePreferenceStorage.saveProfile(userProfileData)
     }
 
-    private fun changeLogin(isLogin: Boolean) {
-        viewModelScope.launch(IO) {
-            dataStorePreferenceStorage.isLogin(isLogin)
-        }
+    private fun changeLogin(isLogin: Boolean) = viewModelScope.launch(IO) {
+        dataStorePreferenceStorage.isLogin(isLogin)
     }
 
-    fun getUserDetails() {
-        viewModelScope.launch(IO) {
-            authRepo.getUserProfile(
-                successListener = {
-                    userProfileData.value = NetworkResponse.Success(it)
-                },
-                failureListener = {
-                    userProfileData.value =
-                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
-                }
-            )
-        }
+    fun getUserDetails() = viewModelScope.launch(IO) {
+        val userResponse = authRepo.getUserProfile()
+        userProfileData.value = userResponse
     }
 
     fun addTransaction(
         transactionDetailsModel: TransactionDetailsModel,
         successListener: () -> Unit,
         failureListener: () -> Unit
-    ) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.addTransaction(
-                transactionDetailsModel,
-                successListener = {
-                    val categoryDataModel = CategoryDataModel(
-                        amount = transactionDetailsModel.transactionAmount.toLong(),
-                        categoryName = transactionDetailsModel.transactionCategory,
-                        transactionType = transactionDetailsModel.transactionType
-                    )
-                    if (transactionDetailsModel.transactionType == INCOME_DATA) {
-                        addIncomeData(categoryDataModel)
-                        updateTotalIncomeDate(transactionDetailsModel.transactionAmount.toLong())
-                    } else {
-                        addExpenseData(categoryDataModel)
-                        updateTotalExpenseDate(transactionDetailsModel.transactionAmount.toLong())
-                    }
-                    successListener.invoke()
-                },
-                failureListener = {
-                    failureListener.invoke()
+    ) = viewModelScope.launch(IO) {
+        remoteDataSource.addTransaction(
+            transactionDetailsModel,
+            successListener = {
+                val categoryDataModel = CategoryDataModel(
+                    amount = transactionDetailsModel.transactionAmount.toLong(),
+                    categoryName = transactionDetailsModel.transactionCategory,
+                    transactionType = transactionDetailsModel.transactionType
+                )
+                if (transactionDetailsModel.transactionType == INCOME_DATA) {
+                    addIncomeData(categoryDataModel)
+                    updateTotalIncomeDate(transactionDetailsModel.transactionAmount.toLong())
+                } else {
+                    addExpenseData(categoryDataModel)
+                    updateTotalExpenseDate(transactionDetailsModel.transactionAmount.toLong())
                 }
-            )
-        }
+                successListener.invoke()
+            },
+            failureListener = {
+                failureListener.invoke()
+            }
+        )
     }
 
-    fun getAllTransaction() {
-        viewModelScope.launch(IO) {
-            fetchTransaction.getAllTransaction(
-                successListener = {
-                    allTransaction.value = NetworkResponse.Success(data = it)
-                },
-                failureListener = {
-                    allTransaction.value =
-                        NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
-                }
-            )
-        }
+    fun getAllTransaction() = viewModelScope.launch(IO) {
+        fetchTransaction.getAllTransaction(
+            successListener = {
+                allTransaction.value = NetworkResponse.Success(data = it)
+            },
+            failureListener = {
+                allTransaction.value =
+                    NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
+            }
+        )
     }
 
-    fun getIncomeData() {
-        viewModelScope.launch(IO) {
-            fetchTransaction.getIncomeData(
-                successListener = {
-                    incomeData.value = it
-                },
-                failureListener = {
-                    incomeData.value =
-                        emptyList()
-                }
-            )
-        }
+    fun getIncomeData() = viewModelScope.launch(IO) {
+        fetchTransaction.getIncomeData(
+            successListener = {
+                incomeData.value = it
+            },
+            failureListener = {
+                incomeData.value =
+                    emptyList()
+            }
+        )
     }
 
-    fun getExpenseData() {
-        viewModelScope.launch(IO) {
-            fetchTransaction.getExpenseData(
-                successListener = {
-                    expenseData.value = it
-                },
-                failureListener = {
-                    expenseData.value =
-                        emptyList()
-                }
-            )
-        }
+    fun getExpenseData() = viewModelScope.launch(IO) {
+        fetchTransaction.getExpenseData(
+            successListener = {
+                expenseData.value = it
+            },
+            failureListener = {
+                expenseData.value =
+                    emptyList()
+            }
+        )
     }
 
     fun createCategory(
         categoryDataModel: CategoryDataModel,
         successListener: () -> Unit,
         failureListener: () -> Unit
-    ) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.createCategory(
-                categoryDataModel,
-                successListener = {
-                    successListener.invoke()
-                },
-                failureListener = {
-                    failureListener.invoke()
-                }
-            )
-        }
+    ) = viewModelScope.launch(IO) {
+        remoteDataSource.createCategory(
+            categoryDataModel,
+            successListener = {
+                successListener.invoke()
+            },
+            failureListener = {
+                failureListener.invoke()
+            }
+        )
     }
 
-    private fun addIncomeData(categoryDataModel: CategoryDataModel) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.addIncomeData(
-                categoryDataModel = categoryDataModel,
-                successListener = {},
-                failureListener = {}
-            )
-        }
+    private fun addIncomeData(categoryDataModel: CategoryDataModel) = viewModelScope.launch(IO) {
+        remoteDataSource.addIncomeData(
+            categoryDataModel = categoryDataModel,
+            successListener = {},
+            failureListener = {}
+        )
     }
 
-    private fun addExpenseData(categoryDataModel: CategoryDataModel) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.addExpenseData(
-                categoryDataModel = categoryDataModel,
-                successListener = {},
-                failureListener = {}
-            )
-        }
+    private fun addExpenseData(categoryDataModel: CategoryDataModel) = viewModelScope.launch(IO) {
+        remoteDataSource.addExpenseData(
+            categoryDataModel = categoryDataModel,
+            successListener = {},
+            failureListener = {}
+        )
     }
 
-    private fun updateTotalIncomeDate(incomeAmmout: Long) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.updateTotalIncomeData(
-                incomeAmount = incomeAmmout,
-                successListener = {},
-                failureListener = {}
-            )
-        }
+    private fun updateTotalIncomeDate(incomeAmmout: Long) = viewModelScope.launch(IO) {
+        remoteDataSource.updateTotalIncomeData(
+            incomeAmount = incomeAmmout,
+            successListener = {},
+            failureListener = {}
+        )
     }
 
-    private fun updateTotalExpenseDate(expenseAmout: Long) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.updateTotalExpense(
-                successListener = {},
-                failureListener = {},
-                expenseAmount = expenseAmout
-            )
-        }
+    private fun updateTotalExpenseDate(expenseAmout: Long) = viewModelScope.launch(IO) {
+        remoteDataSource.updateTotalExpense(
+            successListener = {},
+            failureListener = {},
+            expenseAmount = expenseAmout
+        )
     }
 
     fun loginUser(
@@ -276,30 +228,7 @@ class MainViewModel @Inject constructor(
                     it.accessToken,
                     auth0,
                     successListener = { user ->
-                        val profileModel = ProfileDataModel(
-                            name = user.name ?: "",
-                            email = user.email ?: "",
-                            profileUrl = user.pictureURL ?: "",
-                            userId = user.getId() ?: "",
-                        )
-                        viewModelScope.launch(IO) {
-                            authRepo.addUserToFirebase(
-                                userid = profileModel.userId,
-                                profileDataModel = profileModel,
-                                successListener = {
-                                    changeLogin(true)
-                                    saveProfile(
-                                        profileModel
-                                    )
-                                    loginState.value = NetworkResponse.Success("Success")
-                                },
-                                failureListener = { expenseData ->
-                                    loginState.value = NetworkResponse.Failure(
-                                        expenseData.localizedMessage ?: "Unknown Error"
-                                    )
-                                }
-                            )
-                        }
+                        handleAfterLogin(user)
                     },
                     failureListener = { expenseData ->
                         loginState.value =
@@ -311,6 +240,30 @@ class MainViewModel @Inject constructor(
                 loginState.value = NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
             }
         )
+    }
+
+    private fun handleAfterLogin(user: UserProfile) = viewModelScope.launch(IO) {
+        val profileModel = ProfileDataModel(
+            name = user.name ?: "",
+            email = user.email ?: "",
+            profileUrl = user.pictureURL ?: "",
+            userId = user.getId() ?: "",
+        )
+        val userResponse = authRepo.addUserToFirebase(
+            userid = profileModel.userId,
+            profileDataModel = profileModel
+        )
+        when (userResponse) {
+            is NetworkResponse.Loading -> Unit
+            is NetworkResponse.Failure -> {
+                loginState.value = NetworkResponse.Failure(userResponse.message ?: "Unknown Error")
+            }
+            is NetworkResponse.Success -> {
+                changeLogin(true)
+                saveProfile(profileModel)
+                loginState.value = NetworkResponse.Success("Success")
+            }
+        }
     }
 
     fun logoutUser(
@@ -333,7 +286,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteTransaction(transactionDetailsModel: TransactionDetailsModel) {
+    fun deleteTransaction(transactionDetailsModel: TransactionDetailsModel) =
         viewModelScope.launch(IO) {
             remoteDataSource.deleteTransaction(
                 transactionDetailsModel,
@@ -354,23 +307,20 @@ class MainViewModel @Inject constructor(
                 failureListener = {}
             )
         }
-    }
 
     fun uploadFeedback(
         feedbackText: String,
         successListener: () -> Unit,
         failureListener: () -> Unit
-    ) {
-        viewModelScope.launch(IO) {
-            remoteDataSource.addFeedback(
-                feedbackText = feedbackText,
-                successListener = {
-                    successListener.invoke()
-                },
-                failureListener = {
-                    failureListener.invoke()
-                }
-            )
-        }
+    ) = viewModelScope.launch(IO) {
+        remoteDataSource.addFeedback(
+            feedbackText = feedbackText,
+            successListener = {
+                successListener.invoke()
+            },
+            failureListener = {
+                failureListener.invoke()
+            }
+        )
     }
 }

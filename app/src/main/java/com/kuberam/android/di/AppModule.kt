@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -30,6 +32,9 @@ object AppModule {
             context.preferencesDataStoreFile(PREF__DATA_NAME)
         }
     }
+
+    @Provides
+    fun providesFirebaseAuth(): FirebaseAuth = Firebase.auth
 
     @Singleton
     @Provides

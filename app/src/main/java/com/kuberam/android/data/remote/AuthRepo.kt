@@ -11,6 +11,10 @@ import com.auth0.android.result.UserProfile
 import com.google.firebase.firestore.CollectionReference
 import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.ProfileDataModel
+import com.kuberam.android.utils.Constant.USER_DOES_NOT_EXIST
+import com.kuberam.android.utils.NetworkResponse
+import com.kuberam.android.utils.mapToUnit
+import com.kuberam.android.utils.safeFirebaseCall
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -20,19 +24,13 @@ class AuthRepo @Inject constructor(
     private val dataStorePreferenceStorage: DataStorePreferenceStorage,
     @Named("userCollectionReference") private val userCollectionReference: CollectionReference,
 ) {
-    suspend fun getUserProfile(
-        successListener: (ProfileDataModel) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
+
+    suspend fun getUserProfile(): NetworkResponse<ProfileDataModel> =
+        safeFirebaseCall(nullDataMessage = "User does not exist", handleNullChecking = true) {
             val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            val task =
-                userCollectionReference.document(userid).get().await()
-            successListener.invoke(task.toObject(ProfileDataModel::class.java)!!)
-        } catch (e: Exception) {
-            failureListener.invoke(e)
+            userCollectionReference.document(userid).get().await()
+                .toObject(ProfileDataModel::class.java)
         }
-    }
 
     fun loginUser(
         context: Context,
@@ -77,77 +75,88 @@ class AuthRepo @Inject constructor(
                 })
     }
 
+    // return success if user exists else failure with does not exist message
+    private suspend fun doesUserExist(userid: String) =
+        safeFirebaseCall(nullDataMessage = USER_DOES_NOT_EXIST, handleNullChecking = true) {
+            userCollectionReference.document(userid).get().await()
+                .toObject(ProfileDataModel::class.java)
+        }
+
     suspend fun addUserToFirebase(
         userid: String,
         profileDataModel: ProfileDataModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val id = userCollectionReference.document(userid).get().await()
-            if (id.exists()) {
-                try {
-                    userCollectionReference.document(userid).update(
-                        "name", profileDataModel.name,
-                        "email", profileDataModel.email,
-                        "profileUrl", profileDataModel.profileUrl,
-                        "userId", profileDataModel.userId
-                    ).await()
-                    successListener.invoke("Added")
-                } catch (e: Exception) {
-                    failureListener.invoke(e)
-                }
-            } else {
-                try {
-                    userCollectionReference.document(userid).set(profileDataModel).await()
-                    successListener.invoke("Added")
-                } catch (e: Exception) {
-                    failureListener.invoke(e)
-                }
-            }
-        } catch (e: Exception) {
-            failureListener.invoke(e)
+    ): NetworkResponse<Unit> {
+        val doesExist = doesUserExist(userid = userid)
+        // this means there was a failure in getting data
+        if (doesExist is NetworkResponse.Failure && doesExist.message != USER_DOES_NOT_EXIST) return doesExist.mapToUnit()
+        return if (doesExist is NetworkResponse.Success) { // This means user already exists
+            updateUserData(userid, profileDataModel)
+        } else { // This means user does not exist
+            addNewUser(userid, profileDataModel)
         }
     }
+
+    private suspend fun updateUserData(
+        userid: String,
+        profileDataModel: ProfileDataModel
+    ): NetworkResponse<Unit> =
+        safeFirebaseCall(successMessage = "Success") {
+            userCollectionReference.document(userid).update(
+                "name", profileDataModel.name,
+                "email", profileDataModel.email,
+                "profileUrl", profileDataModel.profileUrl,
+                "userId", profileDataModel.userId
+            ).await()
+        }.mapToUnit()
+
+    private suspend fun addNewUser(
+        userid: String,
+        profileDataModel: ProfileDataModel
+    ): NetworkResponse<Unit> = safeFirebaseCall(successMessage = "Success") {
+        userCollectionReference.document(userid).set(profileDataModel).await()
+    }.mapToUnit()
 
     suspend fun logoutUser(
         auth: Auth0,
         context: Context,
         successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
+        failureListener: (String) -> Unit
     ) {
-        clearData(
-            successListener = {
-                WebAuthProvider.logout(auth)
-                    .withScheme("demo")
-                    .start(
-                        context,
-                        object : Callback<Void?, AuthenticationException> {
-                            override fun onSuccess(result: Void?) {
-                                successListener.invoke("Logout")
-                            }
-
-                            override fun onFailure(error: AuthenticationException) {
-                                failureListener.invoke(error)
-                            }
-                        }
-                    )
-            },
-            failureListener = {
-                failureListener.invoke(it)
-            }
-        )
+        val clearData = clearData()
+        if (clearData is NetworkResponse.Success) {
+            logoutFromAuth0(auth, context, successListener, failureListener)
+        } else
+            failureListener.invoke(clearData.message.toString())
     }
 
-    private suspend fun clearData(
+    private fun logoutFromAuth0(
+        auth: Auth0,
+        context: Context,
         successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
+        failureListener: (String) -> Unit
     ) {
-        try {
+        WebAuthProvider.logout(auth)
+            .withScheme("demo")
+            .start(
+                context,
+                object : Callback<Void?, AuthenticationException> {
+                    override fun onSuccess(result: Void?) {
+                        successListener.invoke("Logout")
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        failureListener.invoke(error.message.toString())
+                    }
+                }
+            )
+    }
+
+    private suspend fun clearData(): NetworkResponse<Unit> {
+        return try {
             dataStorePreferenceStorage.clearData()
-            successListener.invoke("Cleared")
+            NetworkResponse.Success(message = "Cleared", data = Unit)
         } catch (e: Exception) {
-            failureListener.invoke(e)
+            NetworkResponse.Failure(message = e.message.toString())
         }
     }
 }
