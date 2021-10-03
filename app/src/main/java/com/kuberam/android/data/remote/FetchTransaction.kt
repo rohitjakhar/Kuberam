@@ -6,6 +6,8 @@ import com.kuberam.android.data.local.DataStorePreferenceStorage
 import com.kuberam.android.data.model.CategoryDataModel
 import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.utils.Constant
+import com.kuberam.android.utils.NetworkResponse
+import com.kuberam.android.utils.safeFirebaseCall
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -15,68 +17,31 @@ class FetchTransaction @Inject constructor(
     private val dataStorePreferenceStorage: DataStorePreferenceStorage,
     @Named("userCollectionReference") private val userCollectionReference: CollectionReference
 ) {
-    suspend fun getAllTransaction(
-        successListener: (List<TransactionDetailsModel>) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        val userid = dataStorePreferenceStorage.userProfileData.first().userId
-        val task =
+
+    val userId = dataStorePreferenceStorage.userProfileData
+
+    suspend fun getAllTransaction(): NetworkResponse<List<TransactionDetailsModel>> {
+        val userid = userId.first().userId
+        return safeFirebaseCall(nullDataMessage = "Empty list", handleNullChecking = true) {
             userCollectionReference.document(userid).collection(Constant.TRANSACTION_COLLECTION)
                 .orderBy("transactionDate", Query.Direction.DESCENDING).get().await()
-        if (task.isEmpty) {
-            failureListener.invoke(Exception("Empty List"))
-        } else {
-            val transactionDetailsModel: MutableList<TransactionDetailsModel> = mutableListOf()
-            for (transaction in task.documents) {
-                transactionDetailsModel.add(transaction.toObject(TransactionDetailsModel::class.java)!!)
-            }
-            successListener.invoke(transactionDetailsModel)
+                .toObjects(TransactionDetailsModel::class.java)
         }
     }
 
-    suspend fun getIncomeData(
-        successListener: (List<CategoryDataModel>) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val transactionListModel: MutableList<CategoryDataModel> = mutableListOf()
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            val task =
-                userCollectionReference.document(userid).collection(Constant.INCOME_DATA).get()
-                    .await()
-            if (task.isEmpty) {
-                failureListener.invoke(Exception("Empty List"))
-            } else {
-                for (transaction in task.documents) {
-                    transactionListModel.add(transaction.toObject(CategoryDataModel::class.java)!!)
-                }
-                successListener.invoke(transactionListModel)
-            }
-        } catch (e: Exception) {
-            failureListener.invoke(e)
+    suspend fun getIncomeData(): NetworkResponse<List<CategoryDataModel>> {
+        val userid = userId.first().userId
+        return safeFirebaseCall(handleNullChecking = true, nullDataMessage = "Empty list") {
+            userCollectionReference.document(userid).collection(Constant.INCOME_DATA).get()
+                .await().toObjects(CategoryDataModel::class.java)
         }
     }
 
-    suspend fun getExpenseData(
-        successListener: (List<CategoryDataModel>) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val transactionListModel: MutableList<CategoryDataModel> = mutableListOf()
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            val task =
-                userCollectionReference.document(userid).collection(Constant.EXPENSE_DATA).get()
-                    .await()
-            if (task.isEmpty) {
-                failureListener.invoke(Exception("Empty List"))
-            } else {
-                for (transaction in task.documents) {
-                    transactionListModel.add(transaction.toObject(CategoryDataModel::class.java)!!)
-                }
-                successListener.invoke(transactionListModel)
-            }
-        } catch (e: Exception) {
-            failureListener.invoke(e)
+    suspend fun getExpenseData(): NetworkResponse<List<CategoryDataModel>> {
+        val userid = userId.first().userId
+        return safeFirebaseCall(handleNullChecking = true, nullDataMessage = "Empty list") {
+            userCollectionReference.document(userid).collection(Constant.EXPENSE_DATA).get()
+                .await().toObjects(CategoryDataModel::class.java)
         }
     }
 }
