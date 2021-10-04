@@ -134,39 +134,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun getAllTransaction() = viewModelScope.launch(IO) {
-        fetchTransaction.getAllTransaction(
-            successListener = {
-                allTransaction.value = NetworkResponse.Success(data = it)
-            },
-            failureListener = {
-                allTransaction.value =
-                    NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
-            }
-        )
+        allTransaction.value = fetchTransaction.getAllTransaction()
     }
 
     fun getIncomeData() = viewModelScope.launch(IO) {
-        fetchTransaction.getIncomeData(
-            successListener = {
-                incomeData.value = it
-            },
-            failureListener = {
-                incomeData.value =
-                    emptyList()
-            }
-        )
+        incomeData.value = fetchTransaction.getIncomeData().data ?: emptyList()
     }
 
     fun getExpenseData() = viewModelScope.launch(IO) {
-        fetchTransaction.getExpenseData(
-            successListener = {
-                expenseData.value = it
-            },
-            failureListener = {
-                expenseData.value =
-                    emptyList()
-            }
-        )
+        expenseData.value = fetchTransaction.getExpenseData().data ?: emptyList()
     }
 
     fun createCategory(
