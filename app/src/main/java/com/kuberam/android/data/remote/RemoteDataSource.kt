@@ -9,6 +9,7 @@ import com.kuberam.android.data.model.TransactionDetailsModel
 import com.kuberam.android.utils.Constant
 import com.kuberam.android.utils.Constant.EXPENSE_DATA
 import com.kuberam.android.utils.Constant.TRANSACTION_COLLECTION
+import com.kuberam.android.utils.safeResultUnit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -21,140 +22,84 @@ class RemoteDataSource @Inject constructor(
 ) {
 
     suspend fun addTransaction(
-        transactionDetailsModel: TransactionDetailsModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid).collection(TRANSACTION_COLLECTION)
-                .document(transactionDetailsModel.transactionId)
-                .set(transactionDetailsModel).await()
-            successListener.invoke("Added")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        transactionDetailsModel: TransactionDetailsModel
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid).collection(TRANSACTION_COLLECTION)
+            .document(transactionDetailsModel.transactionId)
+            .set(transactionDetailsModel).await()
     }
 
     suspend fun addIncomeData(
-        categoryDataModel: CategoryDataModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid).collection(Constant.INCOME_DATA)
-                .document(categoryDataModel.categoryName)
-                .update(
-                    "amount",
-                    FieldValue.increment(categoryDataModel.amount)
-                ).await()
-            successListener.invoke("Added")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        categoryDataModel: CategoryDataModel
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid).collection(Constant.INCOME_DATA)
+            .document(categoryDataModel.categoryName)
+            .update(
+                "amount",
+                FieldValue.increment(categoryDataModel.amount)
+            ).await()
     }
 
     suspend fun addExpenseData(
-        categoryDataModel: CategoryDataModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid).collection(EXPENSE_DATA)
-                .document(categoryDataModel.categoryName)
-                .update(
-                    "amount",
-                    FieldValue.increment(categoryDataModel.amount)
-                ).await()
-            successListener.invoke("Added")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        categoryDataModel: CategoryDataModel
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid).collection(EXPENSE_DATA)
+            .document(categoryDataModel.categoryName)
+            .update(
+                "amount",
+                FieldValue.increment(categoryDataModel.amount)
+            ).await()
     }
 
     suspend fun updateTotalIncomeData(
-        incomeAmount: Long,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid)
-                .update(
-                    "totalIncome",
-                    FieldValue.increment(incomeAmount)
-                ).await()
-            successListener.invoke("Updated")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        incomeAmount: Long
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid)
+            .update(
+                "totalIncome",
+                FieldValue.increment(incomeAmount)
+            ).await()
     }
 
     suspend fun updateTotalExpense(
-        expenseAmount: Long,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid)
-                .update(
-                    "totalExpense",
-                    FieldValue.increment(expenseAmount)
-                ).await()
-            successListener.invoke("Updated")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        expenseAmount: Long
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid)
+            .update(
+                "totalExpense",
+                FieldValue.increment(expenseAmount)
+            ).await()
     }
 
     suspend fun createCategory(
-        categoryDataModel: CategoryDataModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid).collection(categoryDataModel.transactionType)
-                .document(categoryDataModel.categoryName).set(categoryDataModel).await()
-            successListener.invoke("Created")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        categoryDataModel: CategoryDataModel
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid).collection(categoryDataModel.transactionType)
+            .document(categoryDataModel.categoryName).set(categoryDataModel).await()
     }
 
     suspend fun deleteTransaction(
-        transactionDetailsModel: TransactionDetailsModel,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val userid = dataStorePreferenceStorage.userProfileData.first().userId
-            userCollectionReference.document(userid).collection(TRANSACTION_COLLECTION)
-                .document(transactionDetailsModel.transactionId).delete().await()
-            successListener.invoke("Deleted")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        transactionDetailsModel: TransactionDetailsModel
+    ) = safeResultUnit {
+        val userid = dataStorePreferenceStorage.userProfileData.first().userId
+        userCollectionReference.document(userid).collection(TRANSACTION_COLLECTION)
+            .document(transactionDetailsModel.transactionId).delete().await()
     }
 
     suspend fun addFeedback(
-        feedbackText: String,
-        successListener: (String) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
-        try {
-            val feedbackModel = FeedbackModel(
-                userId = dataStorePreferenceStorage.userProfileData.first().userId,
-                userName = dataStorePreferenceStorage.userProfileData.first().name,
-                feedback = feedbackText
-            )
-            feedbackCollectionReference.document().set(feedbackModel).await()
-            successListener.invoke("Added")
-        } catch (e: Exception) {
-            failureListener.invoke(e)
-        }
+        feedbackText: String
+    ) = safeResultUnit {
+        val feedbackModel = FeedbackModel(
+            userId = dataStorePreferenceStorage.userProfileData.first().userId,
+            userName = dataStorePreferenceStorage.userProfileData.first().name,
+            feedback = feedbackText
+        )
+        feedbackCollectionReference.document().set(feedbackModel).await()
     }
 }
