@@ -196,26 +196,22 @@ class MainViewModel @Inject constructor(
     fun loginUser(
         context: Context,
         auth0: Auth0,
-    ) {
-        authRepo.loginUser(
-            context, auth0,
-            successListener = {
-                authRepo.loadProfile(
-                    it.accessToken,
-                    auth0,
-                    successListener = { user ->
-                        handleAfterLogin(user)
-                    },
-                    failureListener = { expenseData ->
-                        loginState.value =
-                            NetworkResponse.Failure(expenseData.localizedMessage ?: "Unknown Error")
-                    }
-                )
-            },
-            failureListener = {
-                loginState.value = NetworkResponse.Failure(it.localizedMessage ?: "Unknown Error")
-            }
-        )
+    ) = viewModelScope.launch {
+        authRepo.loginUser(context, auth0).apply {
+            onFailure(this@MainViewModel::handleError)
+            onSuccess { loadProfile(it.accessToken, auth0) }
+        }
+    }
+
+    private suspend fun loadProfile(token: String, auth0: Auth0) {
+        authRepo.loadProfile(token, auth0).apply {
+            onFailure(this@MainViewModel::handleError)
+            onSuccess(this@MainViewModel::handleAfterLogin)
+        }
+    }
+
+    private fun handleError(error: Throwable) {
+        loginState.value = NetworkResponse.Failure(error.localizedMessage ?: "Unknown Error")
     }
 
     private fun handleAfterLogin(user: UserProfile) = viewModelScope.launch(IO) {
@@ -231,9 +227,7 @@ class MainViewModel @Inject constructor(
         )
         when (userResponse) {
             is NetworkResponse.Loading -> Unit
-            is NetworkResponse.Failure -> {
-                loginState.value = NetworkResponse.Failure(userResponse.message ?: "Unknown Error")
-            }
+            is NetworkResponse.Failure -> handleError(Throwable(userResponse.message))
             is NetworkResponse.Success -> {
                 changeLogin(true)
                 saveProfile(profileModel)
@@ -246,19 +240,11 @@ class MainViewModel @Inject constructor(
         auth0: Auth0,
         context: Context,
         successListener: () -> Unit,
-        failureListener: () -> Unit
-    ) {
-        viewModelScope.launch(IO) {
-            authRepo.logoutUser(
-                auth = auth0,
-                context = context,
-                successListener = {
-                    successListener.invoke()
-                },
-                failureListener = {
-                    failureListener.invoke()
-                }
-            )
+        failureListener: (() -> Unit)? = null
+    ) = viewModelScope.launch(IO) {
+        authRepo.logoutUser(auth = auth0, context = context).apply {
+            onSuccess { successListener() }
+            onFailure { failureListener?.invoke() }
         }
     }
 
