@@ -110,9 +110,9 @@ class MainViewModel @Inject constructor(
         successListener: () -> Unit,
         failureListener: () -> Unit
     ) = viewModelScope.launch(IO) {
-        remoteDataSource.addTransaction(
-            transactionDetailsModel,
-            successListener = {
+        remoteDataSource.addTransaction(transactionDetailsModel).apply {
+            onFailure { failureListener.invoke() }
+            onSuccess {
                 val categoryDataModel = CategoryDataModel(
                     amount = transactionDetailsModel.transactionAmount.toLong(),
                     categoryName = transactionDetailsModel.transactionCategory,
@@ -126,11 +126,8 @@ class MainViewModel @Inject constructor(
                     updateTotalExpenseDate(transactionDetailsModel.transactionAmount.toLong())
                 }
                 successListener.invoke()
-            },
-            failureListener = {
-                failureListener.invoke()
             }
-        )
+        }
     }
 
     fun getAllTransaction() = viewModelScope.launch(IO) {
@@ -150,47 +147,26 @@ class MainViewModel @Inject constructor(
         successListener: () -> Unit,
         failureListener: () -> Unit
     ) = viewModelScope.launch(IO) {
-        remoteDataSource.createCategory(
-            categoryDataModel,
-            successListener = {
-                successListener.invoke()
-            },
-            failureListener = {
-                failureListener.invoke()
-            }
-        )
+        remoteDataSource.createCategory(categoryDataModel).apply {
+            onSuccess { successListener() }
+            onFailure { failureListener() }
+        }
     }
 
     private fun addIncomeData(categoryDataModel: CategoryDataModel) = viewModelScope.launch(IO) {
-        remoteDataSource.addIncomeData(
-            categoryDataModel = categoryDataModel,
-            successListener = {},
-            failureListener = {}
-        )
+        remoteDataSource.addIncomeData(categoryDataModel)
     }
 
     private fun addExpenseData(categoryDataModel: CategoryDataModel) = viewModelScope.launch(IO) {
-        remoteDataSource.addExpenseData(
-            categoryDataModel = categoryDataModel,
-            successListener = {},
-            failureListener = {}
-        )
+        remoteDataSource.addExpenseData(categoryDataModel)
     }
 
     private fun updateTotalIncomeDate(incomeAmmout: Long) = viewModelScope.launch(IO) {
-        remoteDataSource.updateTotalIncomeData(
-            incomeAmount = incomeAmmout,
-            successListener = {},
-            failureListener = {}
-        )
+        remoteDataSource.updateTotalIncomeData(incomeAmmout)
     }
 
     private fun updateTotalExpenseDate(expenseAmout: Long) = viewModelScope.launch(IO) {
-        remoteDataSource.updateTotalExpense(
-            successListener = {},
-            failureListener = {},
-            expenseAmount = expenseAmout
-        )
+        remoteDataSource.updateTotalExpense(expenseAmout)
     }
 
     fun loginUser(
@@ -262,41 +238,35 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteTransaction(transactionDetailsModel: TransactionDetailsModel) =
-        viewModelScope.launch(IO) {
-            remoteDataSource.deleteTransaction(
-                transactionDetailsModel,
-                successListener = {
-                    val categoryDataModel = CategoryDataModel(
-                        amount = -transactionDetailsModel.transactionAmount.toLong(),
-                        categoryName = transactionDetailsModel.transactionCategory,
-                        transactionType = transactionDetailsModel.transactionType
-                    )
-                    if (transactionDetailsModel.transactionType == INCOME_DATA) {
-                        addIncomeData(categoryDataModel)
-                        updateTotalIncomeDate(categoryDataModel.amount)
-                    } else {
-                        addExpenseData(categoryDataModel)
-                        updateTotalExpenseDate(categoryDataModel.amount)
-                    }
-                },
-                failureListener = {}
-            )
+    fun deleteTransaction(
+        transactionDetailsModel: TransactionDetailsModel
+    ) = viewModelScope.launch(IO) {
+        remoteDataSource.deleteTransaction(transactionDetailsModel).apply {
+            onSuccess {
+                val categoryDataModel = CategoryDataModel(
+                    amount = -transactionDetailsModel.transactionAmount.toLong(),
+                    categoryName = transactionDetailsModel.transactionCategory,
+                    transactionType = transactionDetailsModel.transactionType
+                )
+                if (transactionDetailsModel.transactionType == INCOME_DATA) {
+                    addIncomeData(categoryDataModel)
+                    updateTotalIncomeDate(categoryDataModel.amount)
+                } else {
+                    addExpenseData(categoryDataModel)
+                    updateTotalExpenseDate(categoryDataModel.amount)
+                }
+            }
         }
+    }
 
     fun uploadFeedback(
         feedbackText: String,
         successListener: () -> Unit,
         failureListener: () -> Unit
     ) = viewModelScope.launch(IO) {
-        remoteDataSource.addFeedback(
-            feedbackText = feedbackText,
-            successListener = {
-                successListener.invoke()
-            },
-            failureListener = {
-                failureListener.invoke()
-            }
-        )
+        remoteDataSource.addFeedback(feedbackText).apply {
+            onSuccess { successListener() }
+            onFailure { failureListener() }
+        }
     }
 }
