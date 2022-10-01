@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class AuthRepo @Inject constructor(
     private val dataStorePreferenceStorage: DataStorePreferenceStorage,
@@ -32,12 +34,10 @@ class AuthRepo @Inject constructor(
                 .toObject(ProfileDataModel::class.java)
         }
 
-    fun loginUser(
+    suspend fun loginUser(
         context: Context,
         auth: Auth0,
-        successListener: (Credentials) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
+    ): Result<Credentials> = suspendCoroutine {
         WebAuthProvider.login(auth)
             .withScheme("demo")
             .withScope("openid profile email")
@@ -45,32 +45,30 @@ class AuthRepo @Inject constructor(
                 context,
                 object : Callback<Credentials, AuthenticationException> {
                     override fun onFailure(error: AuthenticationException) {
-                        failureListener.invoke(error)
+                        it.resume(Result.failure(error))
                     }
 
                     override fun onSuccess(result: Credentials) {
-                        successListener.invoke(result)
+                        it.resume(Result.success(result))
                     }
                 }
             )
     }
 
-    fun loadProfile(
+    suspend fun loadProfile(
         accessToken: String,
         auth: Auth0,
-        successListener: (UserProfile) -> Unit,
-        failureListener: (Exception) -> Unit
-    ) {
+    ): Result<UserProfile> = suspendCoroutine {
         val client = AuthenticationAPIClient(auth)
         client.userInfo(accessToken)
             .start(object :
                     Callback<UserProfile, AuthenticationException> {
                     override fun onFailure(error: AuthenticationException) {
-                        failureListener.invoke(error)
+                        it.resume(Result.failure(error))
                     }
 
                     override fun onSuccess(result: UserProfile) {
-                        successListener.invoke(result)
+                        it.resume(Result.success(result))
                     }
                 })
     }
@@ -118,34 +116,29 @@ class AuthRepo @Inject constructor(
 
     suspend fun logoutUser(
         auth: Auth0,
-        context: Context,
-        successListener: (String) -> Unit,
-        failureListener: (String) -> Unit
-    ) {
+        context: Context
+    ): Result<String> {
         val clearData = clearData()
-        if (clearData is NetworkResponse.Success) {
-            logoutFromAuth0(auth, context, successListener, failureListener)
-        } else
-            failureListener.invoke(clearData.message.toString())
+        return if (clearData is NetworkResponse.Success) {
+            logoutFromAuth0(auth, context)
+        } else Result.failure(Throwable(clearData.message.toString()))
     }
 
-    private fun logoutFromAuth0(
+    private suspend fun logoutFromAuth0(
         auth: Auth0,
         context: Context,
-        successListener: (String) -> Unit,
-        failureListener: (String) -> Unit
-    ) {
+    ): Result<String> = suspendCoroutine {
         WebAuthProvider.logout(auth)
             .withScheme("demo")
             .start(
                 context,
                 object : Callback<Void?, AuthenticationException> {
                     override fun onSuccess(result: Void?) {
-                        successListener.invoke("Logout")
+                        it.resume(Result.success("Logout"))
                     }
 
                     override fun onFailure(error: AuthenticationException) {
-                        failureListener.invoke(error.message.toString())
+                        it.resume(Result.failure(error))
                     }
                 }
             )
