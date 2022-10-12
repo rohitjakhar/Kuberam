@@ -26,7 +26,6 @@ import com.kuberam.android.utils.textBoxBrush
 
 @Composable
 fun TextBox(
-    backgroundColor: Color = MaterialTheme.colors.secondary,
     text: String,
     clickListener: () -> Unit,
     textColor: Color = MaterialTheme.colors.secondary,

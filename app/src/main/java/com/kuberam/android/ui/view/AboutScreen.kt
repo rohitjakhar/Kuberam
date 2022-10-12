@@ -22,7 +22,6 @@ import com.kuberam.android.utils.Constant.GITHUB_LINK
 import com.kuberam.android.utils.Constant.HASHNODE_LINK
 import com.kuberam.android.utils.Constant.LINKEDIN_LINK
 import com.kuberam.android.utils.Constant.PLAY_STORE_LINK
-import com.kuberam.android.utils.cardBackground
 import com.kuberam.android.utils.openInBrowser
 import com.kuberam.android.utils.textNormalColor
 
@@ -97,7 +96,6 @@ fun AboutScreen(viewModel: MainViewModel) {
                 clickListener = {
                     openInBrowser(link = GITHUB_LINK, context = context)
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -106,7 +104,6 @@ fun AboutScreen(viewModel: MainViewModel) {
                 clickListener = {
                     openInBrowser(link = LINKEDIN_LINK, context = context)
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -115,7 +112,6 @@ fun AboutScreen(viewModel: MainViewModel) {
                 clickListener = {
                     openInBrowser(link = HASHNODE_LINK, context = context)
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value,
             )
@@ -124,7 +120,6 @@ fun AboutScreen(viewModel: MainViewModel) {
                 clickListener = {
                     openInBrowser(link = PLAY_STORE_LINK, context = context)
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )

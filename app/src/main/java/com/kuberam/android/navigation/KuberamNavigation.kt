@@ -42,13 +42,13 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(
             Screen.Profile.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { 600 },
                     animationSpec = tween(300)
                 ) + fadeIn(animationSpec = tween(300))
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(600)
@@ -59,20 +59,20 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(
             Screen.DashboardScreen.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInVertically(
                     initialOffsetY = { 100 },
                     animationSpec = tween(600)
                 ) + fadeIn(animationSpec = tween(300))
             },
-            popEnterTransition = { _, _ ->
+            popEnterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { 100 },
                     animationSpec = tween(600)
                 ) +
                     fadeIn(animationSpec = tween(300))
             },
-            popExitTransition = { _, _ ->
+            popExitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(100)
@@ -83,13 +83,13 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(
             Screen.SplashScreen.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { 100 },
                     animationSpec = tween(600)
                 ) + fadeIn(animationSpec = tween(600))
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(600)
@@ -100,20 +100,20 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(
             Screen.OnBoardScreen.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { 100 },
                     animationSpec = tween(600)
                 ) +
                     fadeIn(animationSpec = tween(300))
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(100)
                 ) + fadeOut(animationSpec = tween(600))
             },
-            popEnterTransition = { _, _ ->
+            popEnterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { 100 },
                     animationSpec = tween(600)
@@ -125,30 +125,30 @@ fun KuberamNavigation(viewModel: MainViewModel) {
         }
         composable(
             Screen.TransactionsScreen.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInVertically(
                     initialOffsetY = { 100 },
                     animationSpec = tween(300)
                 ) + fadeIn(animationSpec = tween(300))
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(100)
                 ) + fadeOut(animationSpec = tween(600))
             }
         ) {
-            AllTransactionScreen(viewModel, navController)
+            AllTransactionScreen(viewModel)
         }
         composable(
             Screen.AboutScreen.route,
-            enterTransition = { _, _ ->
+            enterTransition = {
                 slideInVertically(
                     initialOffsetY = { 100 },
                     animationSpec = tween(300)
                 ) + fadeIn(animationSpec = tween(300))
             },
-            exitTransition = { _, _ ->
+            exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { 100 },
                     animationSpec = tween(100)
