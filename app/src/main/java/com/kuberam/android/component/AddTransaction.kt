@@ -377,7 +377,7 @@ fun AddTransaction(
                     { CalendarView(it) },
                     modifier = Modifier.wrapContentWidth(),
                     update = { views ->
-                        views.setOnDateChangeListener { calendarView, i, i2, i3 ->
+                        views.setOnDateChangeListener { _, i, i2, i3 ->
                             date.value = "$i/${i2 + 1}/$i3"
                         }
                     },

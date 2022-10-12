@@ -34,8 +34,9 @@ fun OnBoardScreen(navController: NavController, viewModel: MainViewModel) {
         }
     Column(Modifier.fillMaxSize()) {
         val items = OnBoardItem.get()
-        val state = rememberPagerState(pageCount = items.size)
+        val state = rememberPagerState()
         HorizontalPager(
+            count = items.size,
             state = state,
             modifier = Modifier.fillMaxSize()
                 .weight(0.8f)

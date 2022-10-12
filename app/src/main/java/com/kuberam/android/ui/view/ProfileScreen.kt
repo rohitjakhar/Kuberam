@@ -151,7 +151,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                 clickListener = {
                     navController.navigate(Screen.AboutScreen.route)
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -163,7 +162,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         context = context
                     )
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -197,7 +195,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         context.startActivity(intent)
                     }
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -208,7 +205,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         if (feedbackModalSheet.isVisible) feedbackModalSheet.hide() else feedbackModalSheet.show()
                     }
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
@@ -223,13 +219,11 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     )
                     context.startActivity(Intent.createChooser(shareIntent, "Kuberam App"))
                 },
-                backgroundColor = cardBackground(isDarkTheme.value),
                 textColor = textNormalColor(isDarkTheme.value),
                 isDarkTheme = isDarkTheme.value
             )
             TextBox(
                 text = stringResource(R.string.logout),
-                backgroundColor = MaterialTheme.colors.error,
                 clickListener = {
                     viewModel.logoutUser(
                         auth0 = auth0,

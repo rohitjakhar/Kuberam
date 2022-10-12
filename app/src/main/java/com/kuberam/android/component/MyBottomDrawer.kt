@@ -66,11 +66,11 @@ fun MyBottomDrawer(
     navController: NavController
 ) {
     val lockCheckState = remember { mutableStateOf(true) }
-    val pagerState = rememberPagerState(pageCount = 2)
+    val pagerState = rememberPagerState()
     val darkTheme = remember { mutableStateOf(false) }
     val currencyState = remember { mutableStateOf("") }
     val showCurrencyDialog = remember { mutableStateOf(false) }
-
+    
     val incomeCategoryState =
         produceState(initialValue = emptyList<CategoryDataModel>(), viewModel.incomeData.value) {
             value = viewModel.incomeData.value
@@ -97,23 +97,34 @@ fun MyBottomDrawer(
         drawerContent = {
             Column(
                 Modifier
-                    .fillMaxWidth().wrapContentHeight()
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             ) {
                 viewModel.getCurrentCurrency()
-                Row(Modifier.fillMaxWidth().padding(16.dp)) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
                     Text(
                         text = stringResource(R.string.add_category),
-                        modifier = Modifier.clickable {
-                            scope.launch {
-                                drawerState.close()
-                                categoryAddSheet.show()
+                        modifier = Modifier
+                            .clickable {
+                                scope.launch {
+                                    drawerState.close()
+                                    categoryAddSheet.show()
+                                }
                             }
-                        }.fillMaxWidth(),
+                            .fillMaxWidth(),
                         color = textNormalColor(isDarkTheme.value)
                     )
                 }
                 Divider(color = Color.LightGray)
-                Box(Modifier.fillMaxWidth().padding(16.dp)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
                     Row {
                         Text(
                             text = stringResource(R.string.dark_theme),
@@ -133,9 +144,12 @@ fun MyBottomDrawer(
                 }
                 Divider(color = Color.LightGray)
                 Box(
-                    Modifier.fillMaxWidth().padding(16.dp).clickable {
-                        showCurrencyDialog.value = true
-                    }
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clickable {
+                            showCurrencyDialog.value = true
+                        }
                 ) {
                     Row {
                         Text(
@@ -145,9 +159,11 @@ fun MyBottomDrawer(
                     }
                     Text(
                         text = currencyState.value,
-                        modifier = Modifier.align(
-                            Alignment.CenterEnd
-                        ).padding(end = 4.dp),
+                        modifier = Modifier
+                            .align(
+                                Alignment.CenterEnd
+                            )
+                            .padding(end = 4.dp),
                         color = textNormalColor(isDarkTheme.value)
                     )
                     if (showCurrencyDialog.value) {
@@ -162,11 +178,13 @@ fun MyBottomDrawer(
                                         Text(
                                             text = it,
                                             style = MaterialTheme.typography.h2,
-                                            modifier = Modifier.clickable {
-                                                viewModel.changeCurrency(it)
-                                                viewModel.getCurrentCurrency()
-                                                showCurrencyDialog.value = false
-                                            }.padding(8.dp),
+                                            modifier = Modifier
+                                                .clickable {
+                                                    viewModel.changeCurrency(it)
+                                                    viewModel.getCurrentCurrency()
+                                                    showCurrencyDialog.value = false
+                                                }
+                                                .padding(8.dp),
                                             color = textNormalColor(isDarkTheme.value)
                                         )
                                     }
@@ -185,7 +203,11 @@ fun MyBottomDrawer(
                     }
                 }
                 Divider(color = Color.LightGray)
-                Box(Modifier.fillMaxWidth().padding(16.dp)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
                     Row {
                         Text(
                             text = "Enable Lock",
@@ -233,7 +255,8 @@ fun MyBottomDrawer(
                 )
             }
             HorizontalPager(
-                pagerState,
+                count = 2,
+                state = pagerState
             ) { page ->
                 if (page == 0) {
                     SinglePieChart(incomeChartList, title = INCOME_DATA)
@@ -241,17 +264,21 @@ fun MyBottomDrawer(
                     SinglePieChart(expenseChartList, EXPENSE_DATA)
                 }
             }
-
+            
             HorizontalPagerIndicator(
                 pagerState = pagerState, indicatorShape = CircleShape,
-                modifier = Modifier.align(
-                    Alignment.CenterHorizontally
-                ).padding(16.dp),
+                modifier = Modifier
+                    .align(
+                        Alignment.CenterHorizontally
+                    )
+                    .padding(16.dp),
             )
             Spacer(Modifier.padding(top = 8.dp))
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 6.dp, end = 6.dp)
             ) {
                 Text(
                     text = stringResource(R.string.recent_transaction),

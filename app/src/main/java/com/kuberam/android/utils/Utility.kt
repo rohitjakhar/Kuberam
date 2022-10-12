@@ -75,7 +75,7 @@ internal fun RowScope.CustomVerticalLegend(entries: List<LegendEntry>) {
     ) {
         itemsIndexed(
             items = entries,
-            key = { index, item ->
+            key = { _, item ->
                 item.hashCode()
             }
         ) { index, item ->

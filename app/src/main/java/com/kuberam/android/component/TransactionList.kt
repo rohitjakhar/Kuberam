@@ -64,10 +64,10 @@ fun TransactionList(viewModel: MainViewModel) {
         LazyColumn {
             itemsIndexed(
                 items = transactionListState.value,
-                key = { index, item ->
+                key = { _, item ->
                     item.hashCode()
                 }
-            ) { index, item ->
+            ) { _, item ->
                 val state = rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToStart) {
